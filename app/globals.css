@@ -79,6 +79,17 @@
 
 @layer base {
   body {
-    @apply bg-background text-text-primary antialiased;
+    @apply bg-background text-text-primary font-sans antialiased;
   }
 }
+
+.bg-stripes {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--color-background),
+    var(--color-background) 8px,
+    var(--color-surface) 8px,
+    var(--color-surface) 16px
+  );
+}
+
