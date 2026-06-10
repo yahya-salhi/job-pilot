@@ -13,7 +13,7 @@ const Page = () => {
       <Navbar />
 
       {/* Main Contents */}
-      <main className="flex-grow flex flex-col">
+      <main className="grow flex flex-col">
         {/* 1. Hero Section (Includes Dashboard Mockup) */}
         <Hero />
 
