@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter } from "next/font/google";       
 import "./globals.css";
+import { PHProvider } from "./providers";       
+import PostHogPageView from "./PostHogPageView";
+import PostHogAuthHandler from "./PostHogAuthHandler";
+import { Suspense } from "react";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -22,8 +26,15 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-background text-text-primary font-sans">{children}</body>
+      <body className="min-h-full flex flex-col bg-background text-text-primary font-sans">
+        <PHProvider>
+          <Suspense fallback={null}>
+            <PostHogPageView />
+            <PostHogAuthHandler />
+          </Suspense>
+          {children}
+        </PHProvider>
+      </body>
     </html>
   );
 }
-
