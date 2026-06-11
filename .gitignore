@@ -43,7 +43,7 @@ next-env.d.ts
 # markdown files
 *.md
 !README.md
-!AGENTS.md
+AGENTS.md
 
 # InsForge & AI agent skills
 .insforge

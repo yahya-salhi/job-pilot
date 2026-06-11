@@ -1,27 +1,31 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { signInWithOAuthAction, type OAuthProvider } from "@/actions/auth";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { useSearchParams } from "next/navigation";
 
 const ERROR_MESSAGES: Record<string, string> = {
-  oauth_failed: "Sign-in failed. Please try again.",
+  oauth_failed: "Sign-in failed. Please try again or use another method.",
+  missing_code: "Authentication failed. No code was returned from the provider.",
   missing_verifier: "Your sign-in session expired. Please try again.",
   exchange_failed: "We couldn't complete your sign-in. Please try again.",
   invalid_provider: "That sign-in method isn't supported.",
 };
 
-const LoginPage = () => {
+const LoginContent = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [pendingProvider, setPendingProvider] = useState<OAuthProvider | null>(null);
+  const searchParams = useSearchParams();
 
   useEffect(() => {
-    const error = new URLSearchParams(window.location.search).get("error");
+    const error = searchParams.get("error");
     if (error) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setErrorMessage(ERROR_MESSAGES[error] ?? ERROR_MESSAGES.oauth_failed);
     }
-  }, []);
+  }, [searchParams]);
 
   const handleOAuthLogin = async (provider: OAuthProvider) => {
     setErrorMessage(null);
@@ -103,6 +107,14 @@ const LoginPage = () => {
 
       <Footer />
     </div>
+  );
+};
+
+const LoginPage = () => {
+  return (
+    <Suspense fallback={null}>
+      <LoginContent />
+    </Suspense>
   );
 };
 

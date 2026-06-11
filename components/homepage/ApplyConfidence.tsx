@@ -31,7 +31,7 @@ export function ApplyConfidence() {
                 Understand your match score
               </h3>
               <p className="text-text-secondary text-sm md:text-base mt-2 leading-relaxed">
-                See how your profile lines up with each role before you apply. Get a clear breakdown of what fits and what's missing.
+                See how your profile lines up with each role before you apply. Get a clear breakdown of what fits and what&apos;s missing.
               </p>
             </div>
 
