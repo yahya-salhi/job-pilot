@@ -18,7 +18,7 @@ export function Hero() {
         {/* Main Headline */}
         <h1 className="text-4xl md:text-5xl lg:text-[56px] font-extrabold tracking-tight text-text-primary leading-tight max-w-4xl">
           Job hunting is hard.<br />
-          Your tools shouldn't be.
+          Your tools shouldn&apos;t be.
         </h1>
 
         {/* Subheadline */}

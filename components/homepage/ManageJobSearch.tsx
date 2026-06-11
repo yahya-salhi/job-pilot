@@ -38,7 +38,7 @@ export function ManageJobSearch() {
                 Keep track of every application
               </h3>
               <p className="text-text-secondary text-sm md:text-base mt-2 leading-relaxed">
-                Keep a clear view of every job you've found, tailored. Your activity and progress all stay in one simple place.
+                Keep a clear view of every job you&apos;ve found, tailored. Your activity and progress all stay in one simple place.
               </p>
             </div>
           </div>
