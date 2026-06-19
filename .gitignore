@@ -41,9 +41,9 @@ yarn-error.log*
 next-env.d.ts
 
 # markdown files
-*.md
 !README.md
-AGENTS.md
+*.md
+
 
 # InsForge & AI agent skills
 .insforge
