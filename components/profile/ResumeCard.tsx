@@ -1,33 +1,91 @@
 "use client";
 
-export function ResumeCard() {
+import { useRef } from "react";
+
+type Props = {
+  resumeUrl: string;
+  selectedFile: File | null;
+  onFileSelect: (file: File | null) => void;
+};
+
+export function ResumeCard({ resumeUrl, selectedFile, onFileSelect }: Props) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
+    onFileSelect(file);
+    // Reset input so selecting the same file again triggers onChange
+    e.target.value = "";
+  };
+
+  const displayName = selectedFile
+    ? selectedFile.name
+    : resumeUrl
+    ? "resume.pdf"
+    : null;
+
   return (
-    <div className="bg-surface border border-border rounded-3xl p-8 shadow-sm space-y-6">
+    <div className="bg-surface border border-border rounded-2xl p-6 shadow-sm space-y-6">
       <div>
-        <h3 className="text-xl font-bold text-text-primary">Resume</h3>
+        <h3 className="text-base font-semibold text-text-primary">Resume</h3>
         <p className="text-sm text-text-secondary mt-1">
-          Upload an existing resume to auto-fill the profile, or generate a new tailored one from your details below.
+          Upload an existing resume to auto-fill the profile, or generate a new
+          tailored one from your details below.
         </p>
       </div>
 
-      <div className="border-2 border-dashed border-border-muted rounded-2xl p-12 flex flex-col items-center justify-center text-center space-y-4">
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".pdf,application/pdf"
+        onChange={handleFileChange}
+        className="hidden"
+      />
+
+      <div
+        className="border-2 border-dashed border-border-muted rounded-xl p-12 flex flex-col items-center justify-center text-center space-y-4 cursor-pointer hover:border-accent/50 transition-colors"
+        onClick={() => fileInputRef.current?.click()}
+      >
         <div className="w-10 h-10 rounded-full bg-accent-muted flex items-center justify-center text-accent">
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
           </svg>
         </div>
         <div>
-          <p className="text-sm font-bold text-text-primary">Click to upload or drag and drop</p>
-          <p className="text-xs text-text-muted mt-1">PDF formatting only. Maximum file size 5MB.</p>
+          {displayName ? (
+            <>
+              <p className="text-sm font-bold text-accent">{displayName}</p>
+              <p className="text-xs text-text-muted mt-1">
+                {selectedFile ? "Ready to upload — save profile to confirm" : "Currently saved"}
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-sm font-bold text-text-primary">Click to upload or drag and drop</p>
+              <p className="text-xs text-text-muted mt-1">PDF formatting only. Maximum file size 5MB.</p>
+            </>
+          )}
         </div>
-        <button className="px-4 py-2 border border-border-muted rounded-md text-xs font-bold text-text-dark hover:bg-surface-secondary transition-colors">
-          Select Resume
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            fileInputRef.current?.click();
+          }}
+          className="px-4 py-2 border border-border rounded-md text-xs font-medium text-text-primary hover:bg-surface-secondary transition-colors"
+        >
+          {displayName ? "Replace Resume" : "Select Resume"}
         </button>
       </div>
 
       <div className="flex items-center justify-between pt-4 border-t border-border-light">
-        <p className="text-xs text-text-secondary">Need a fresh document based on the fields below?</p>
-        <button className="bg-accent text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 hover:bg-accent-dark transition-colors">
+        <p className="text-xs text-text-secondary">
+          Need a fresh document based on the fields below?
+        </p>
+        <button
+          type="button"
+          className="bg-accent text-white px-4 py-2 rounded-md text-xs font-medium flex items-center gap-2 hover:bg-accent-dark transition-colors"
+        >
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
             <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zM6 20V4h7v5h5v11H6z" />
           </svg>
