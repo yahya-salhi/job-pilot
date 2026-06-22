@@ -1,23 +1,52 @@
 "use client";
 
-export function JobPreferencesForm({ preferences }: { preferences: any }) {
+import type { ProfileFormData, ProfileOnChange } from "@/types";
+
+type Props = {
+  form: ProfileFormData;
+  onChange: ProfileOnChange;
+};
+
+export function JobPreferencesForm({ form, onChange }: Props) {
   return (
     <section className="space-y-6">
-      <h4 className="text-sm font-bold text-text-primary">Job Preferences</h4>
+      <h4 className="text-sm font-semibold text-text-primary">Job Preferences</h4>
       <div className="space-y-6">
         <div className="space-y-2">
-          <label htmlFor="titles-seeking" className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Job Titles Seeking</label>
-          <input id="titles-seeking" type="text" defaultValue={preferences.titlesSeeking} className="w-full bg-surface-secondary border border-border-light rounded-lg px-4 py-2.5 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none" />
+          <label
+            htmlFor="titles-seeking"
+            className="text-xs font-normal text-text-muted uppercase tracking-wider"
+          >
+            Job Titles Seeking
+          </label>
+          <input
+            id="titles-seeking"
+            type="text"
+            value={form.jobTitlesSeeking}
+            onChange={(e) => onChange("jobTitlesSeeking", e.target.value)}
+            placeholder="E.g. Frontend Engineer, React Developer"
+            className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+          />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label htmlFor="remote-pref" className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Remote Preference</label>
+            <label
+              htmlFor="remote-pref"
+              className="text-xs font-normal text-text-muted uppercase tracking-wider"
+            >
+              Remote Preference
+            </label>
             <div className="relative">
-              <select id="remote-pref" defaultValue={preferences.remotePreference} className="w-full border border-border-light rounded-lg px-4 py-2.5 text-sm text-text-primary appearance-none bg-transparent focus:ring-1 focus:ring-accent focus:border-accent outline-none">
-                <option>Any</option>
-                <option>Remote</option>
-                <option>On-site</option>
-                <option>Hybrid</option>
+              <select
+                id="remote-pref"
+                value={form.remotePreference}
+                onChange={(e) => onChange("remotePreference", e.target.value)}
+                className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary appearance-none focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+              >
+                <option value="any">Any</option>
+                <option value="remote">Remote</option>
+                <option value="onsite">On-site</option>
+                <option value="hybrid">Hybrid</option>
               </select>
               <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -27,13 +56,62 @@ export function JobPreferencesForm({ preferences }: { preferences: any }) {
             </div>
           </div>
           <div className="space-y-2">
-            <label htmlFor="salary-exp" className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Salary Expectation (Optional)</label>
-            <input id="salary-exp" type="text" placeholder="E.g. $120k+" defaultValue={preferences.salaryExpectation} className="w-full border border-border-light rounded-lg px-4 py-2.5 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none" />
+            <label
+              htmlFor="salary-exp"
+              className="text-xs font-normal text-text-muted uppercase tracking-wider"
+            >
+              Salary Expectation (Optional)
+            </label>
+            <input
+              id="salary-exp"
+              type="text"
+              value={form.salaryExpectation}
+              onChange={(e) => onChange("salaryExpectation", e.target.value)}
+              placeholder="E.g. $120k+"
+              className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+            />
           </div>
         </div>
         <div className="space-y-2">
-          <label htmlFor="pref-locations" className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Preferred Locations (Optional)</label>
-          <input id="pref-locations" type="text" placeholder="E.g. New York, London" defaultValue={preferences.preferredLocations} className="w-full border border-border-light rounded-lg px-4 py-2.5 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none" />
+          <label
+            htmlFor="pref-locations"
+            className="text-xs font-normal text-text-muted uppercase tracking-wider"
+          >
+            Preferred Locations (Optional)
+          </label>
+          <input
+            id="pref-locations"
+            type="text"
+            value={form.preferredLocations}
+            onChange={(e) => onChange("preferredLocations", e.target.value)}
+            placeholder="E.g. New York, London"
+            className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+          />
+        </div>
+        <div className="space-y-2">
+          <label
+            htmlFor="cover-letter-tone"
+            className="text-xs font-normal text-text-muted uppercase tracking-wider"
+          >
+            Cover Letter Tone
+          </label>
+          <div className="relative">
+            <select
+              id="cover-letter-tone"
+              value={form.coverLetterTone}
+              onChange={(e) => onChange("coverLetterTone", e.target.value)}
+              className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary appearance-none focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+            >
+              <option value="formal">Formal</option>
+              <option value="casual">Casual</option>
+              <option value="enthusiastic">Enthusiastic</option>
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
         </div>
       </div>
     </section>
