@@ -7,7 +7,6 @@ import {
 
 const PROTECTED_PREFIXES = ["/dashboard", "/profile", "/find-jobs"];
 
-// Adapts Next.js request/response cookie stores to the SDK's CookieStore shape
 function toCookieStore(
   cookies: NextRequest["cookies"] | NextResponse["cookies"],
 ): CookieStore {
@@ -35,7 +34,6 @@ function toCookieStore(
 export async function proxy(request: NextRequest) {
   const response = NextResponse.next({ request });
 
-  // Refresh the access token if expired and sync auth cookies
   const { accessToken } = await updateSession({
     baseUrl: process.env.NEXT_PUBLIC_INSFORGE_URL!,
     anonKey: process.env.NEXT_PUBLIC_INSFORGE_ANON_KEY!,
@@ -49,7 +47,6 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith(prefix),
   );
 
-  // Carry refreshed auth cookies over to redirect responses
   const redirectWithCookies = (path: string) => {
     const redirectResponse = NextResponse.redirect(new URL(path, request.url));
     for (const cookie of response.cookies.getAll()) {
@@ -71,12 +68,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * - api (route handlers manage their own auth)
-     * - _next/static, _next/image (build assets)
-     * - favicon.ico and static image files
-     */
     "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
