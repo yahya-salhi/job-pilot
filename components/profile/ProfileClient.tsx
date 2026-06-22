@@ -10,6 +10,10 @@ import { EducationForm } from "@/components/profile/EducationForm";
 import { JobPreferencesForm } from "@/components/profile/JobPreferencesForm";
 import { saveProfile, uploadResume } from "@/actions/profile";
 import { getProfileCompletion } from "@/lib/profile-completion";
+import {
+  mergeProfileExtraction,
+  type ExtractedProfilePatch,
+} from "@/lib/merge-profile-extraction";
 import type { ProfileFormData, ProfileOnChange } from "@/types";
 
 type Props = {
@@ -17,6 +21,7 @@ type Props = {
 };
 
 type SaveStatus = "idle" | "saving" | "success" | "error";
+type ExtractStatus = "idle" | "extracting" | "success" | "error";
 
 export function ProfileClient({ initialProfile }: Props) {
   const EMPTY_FORM: ProfileFormData = {
@@ -45,7 +50,9 @@ export function ProfileClient({ initialProfile }: Props) {
   const [form, setForm] = useState<ProfileFormData>(initialProfile);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
+  const [extractStatus, setExtractStatus] = useState<ExtractStatus>("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const [extractError, setExtractError] = useState("");
   const [isPending, startTransition] = useTransition();
 
   const onChange: ProfileOnChange = useCallback(<K extends keyof ProfileFormData>(
@@ -59,6 +66,41 @@ export function ProfileClient({ initialProfile }: Props) {
     () => getProfileCompletion(form),
     [form],
   );
+
+  const handleExtract = async () => {
+    if (!form.resumePdfUrl) {
+      setExtractStatus("error");
+      setExtractError("Upload and save your resume before extracting profile data.");
+      return;
+    }
+
+    setExtractStatus("extracting");
+    setExtractError("");
+
+    try {
+      const response = await fetch("/api/resume/extract", { method: "POST" });
+      const data = (await response.json()) as {
+        success: boolean;
+        error?: string;
+        profilePatch?: ExtractedProfilePatch;
+      };
+
+      if (!response.ok || !data.success || !data.profilePatch) {
+        setExtractStatus("error");
+        setExtractError(data.error ?? "Failed to extract profile from resume.");
+        return;
+      }
+
+      setForm((prev) =>
+        mergeProfileExtraction(prev, initialProfile, data.profilePatch!),
+      );
+      setExtractStatus("success");
+      setTimeout(() => setExtractStatus("idle"), 3000);
+    } catch {
+      setExtractStatus("error");
+      setExtractError("Failed to extract profile from resume. Please try again.");
+    }
+  };
 
   const handleSave = () => {
     setSaveStatus("saving");
@@ -116,6 +158,9 @@ export function ProfileClient({ initialProfile }: Props) {
           resumeUrl={form.resumePdfUrl}
           selectedFile={selectedFile}
           onFileSelect={setSelectedFile}
+          onExtract={handleExtract}
+          isExtracting={extractStatus === "extracting"}
+          extractError={extractError}
         />
 
         <div className="bg-surface border border-border rounded-2xl shadow-sm overflow-hidden">
