@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# JobPilot
+
+AI-powered job hunting assistant. Set up your profile once, upload your resume, and let the agent discover relevant jobs from Adzuna — scoring each one against your profile using GPT-4o. For jobs you're interested in, it researches the company across their public web pages and builds a structured dossier so you arrive at every application fully informed.
+
+## Pages
+
+| Route | Page |
+|-------|------|
+| `/` | Homepage |
+| `/login` | Auth (Google + GitHub OAuth) |
+| `/dashboard` | Overview, stats, recent activity, analytics |
+| `/find-jobs` | Search jobs, filter, sort, paginated list |
+| `/find-jobs/[id]` | Job details + company research dossier |
+| `/profile` | Profile form, resume upload & management |
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (Turbopack)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS 4
+- **Backend**: InsForge (PostgreSQL, auth, storage, edge functions)
+- **AI**: GPT-4o via OpenRouter
+- **Job Data**: Adzuna API
+- **Company Research**: Browserbase + Stagehand
+- **Analytics**: PostHog
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+See `.env.local` for required variables. Key ones:
 
-## Learn More
+- `NEXT_PUBLIC_INSFORGE_URL` — InsForge backend URL
+- `NEXT_PUBLIC_INSFORGE_ANON_KEY` — InsForge anon key
+- `OPENAI_API_KEY` — GPT-4o key
+- `ADZUNA_APP_ID` / `ADZUNA_APP_KEY` — Adzuna job search
+- `BROWSERBASE_API_KEY` / `BROWSERBASE_PROJECT_ID` — company research
+- `NEXT_PUBLIC_POSTHOG_KEY` / `NEXT_PUBLIC_POSTHOG_HOST` — analytics
 
-To learn more about Next.js, take a look at the following resources:
+## Core Flow
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Sign up via Google or GitHub OAuth
+2. Fill your profile and optionally upload a resume PDF
+3. Go to **Find Jobs**, enter a title and location
+4. GPT-4o scores each job 0–100 against your profile
+5. Click a job to see full details, matched/missing skills, and match reason
+6. Click **Research Company** to generate a company dossier via live browsing
+7. Click **Apply Now** to apply on the company's site
