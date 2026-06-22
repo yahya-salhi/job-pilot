@@ -138,9 +138,9 @@ export function ProfessionalInfoForm({ form, onChange }: Props) {
           </div>
           {form.skills.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-3">
-              {form.skills.map((skill) => (
+              {form.skills.map((skill, i) => (
                 <span
-                  key={skill}
+                  key={i}
                   className="px-3 py-1 border border-border rounded-md text-xs font-medium text-text-primary flex items-center gap-1.5"
                 >
                   {skill}
@@ -191,9 +191,9 @@ export function ProfessionalInfoForm({ form, onChange }: Props) {
           </div>
           {form.industries.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-3">
-              {form.industries.map((industry) => (
+              {form.industries.map((industry, i) => (
                 <span
-                  key={industry}
+                  key={i}
                   className="px-3 py-1 border border-border rounded-md text-xs font-medium text-text-primary flex items-center gap-1.5"
                 >
                   {industry}

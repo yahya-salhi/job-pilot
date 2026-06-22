@@ -72,9 +72,9 @@ export function ProfileBanner({ percentage, missingFields, isComplete }: Props) 
           </p>
           {missingFields.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-4">
-              {missingFields.map((tag) => (
+              {missingFields.map((tag, i) => (
                 <span
-                  key={tag}
+                  key={i}
                   className="px-2 py-0.5 bg-error/10 text-error text-[10px] font-bold rounded-sm tracking-wide"
                 >
                   {tag}
