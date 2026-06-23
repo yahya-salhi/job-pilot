@@ -31,8 +31,41 @@ function toCookieStore(
   };
 }
 
+function buildCsp(nonce: string): string {
+  const isDev = process.env.NODE_ENV === "development";
+  const posthogHost =
+    process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://eu.i.posthog.com";
+  const insforgeUrl = process.env.NEXT_PUBLIC_INSFORGE_URL || "";
+
+  const csp = `
+    default-src 'self';
+    script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isDev ? " 'unsafe-eval'" : ""};
+    style-src 'self'${isDev ? " 'unsafe-inline'" : ` 'nonce-${nonce}'`};
+    img-src 'self' blob: data: ${posthogHost};
+    connect-src 'self' ${posthogHost} ${insforgeUrl};
+    font-src 'self' data:;
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+    frame-ancestors 'none';
+    upgrade-insecure-requests;
+  `;
+  return csp.replace(/\s{2,}/g, " ").trim();
+}
+
 export default async function proxy(request: NextRequest) {
-  const response = NextResponse.next({ request });
+  const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
+  const cspHeader = buildCsp(nonce);
+
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-nonce", nonce);
+  requestHeaders.set("Content-Security-Policy", cspHeader);
+
+  const response = NextResponse.next({
+    request: { headers: requestHeaders },
+  });
+  response.headers.set("Content-Security-Policy", cspHeader);
+  response.headers.set("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
 
   const { accessToken } = await updateSession({
     baseUrl: process.env.NEXT_PUBLIC_INSFORGE_URL!,
@@ -68,6 +101,13 @@ export default async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    {
+      source:
+        "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+      missing: [
+        { type: "header", key: "next-router-prefetch" },
+        { type: "header", key: "purpose", value: "prefetch" },
+      ],
+    },
   ],
 };
