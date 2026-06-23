@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useCallback, useMemo } from "react";
+import { useState, useRef, useTransition, useCallback, useMemo } from "react";
 import { ProfileBanner } from "@/components/profile/ProfileBanner";
 import { ResumeCard } from "@/components/profile/ResumeCard";
 import { PersonalInfoForm } from "@/components/profile/PersonalInfoForm";
@@ -25,30 +25,8 @@ type ExtractStatus = "idle" | "extracting" | "success" | "error";
 type GenerateStatus = "idle" | "generating" | "success" | "error";
 
 export function ProfileClient({ initialProfile }: Props) {
-  const EMPTY_FORM: ProfileFormData = {
-    fullName: "",
-    email: "",
-    phone: "",
-    location: "",
-    linkedinUrl: "",
-    portfolioUrl: "",
-    workAuthorization: "citizen",
-    currentTitle: "",
-    experienceLevel: "junior",
-    yearsExperience: "",
-    skills: [],
-    industries: [],
-    workExperience: [],
-    education: { degree: "", field: "", institution: "", graduationYear: "" },
-    jobTitlesSeeking: "",
-    remotePreference: "any",
-    salaryExpectation: "",
-    preferredLocations: "",
-    coverLetterTone: "formal",
-    resumePdfUrl: "",
-  };
-
   const [form, setForm] = useState<ProfileFormData>(initialProfile);
+  const lastSavedRef = useRef(initialProfile);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [extractStatus, setExtractStatus] = useState<ExtractStatus>("idle");
@@ -95,7 +73,7 @@ export function ProfileClient({ initialProfile }: Props) {
       }
 
       setForm((prev) =>
-        mergeProfileExtraction(prev, initialProfile, data.profilePatch!),
+        mergeProfileExtraction(prev, lastSavedRef.current, data.profilePatch!),
       );
       setExtractStatus("success");
       setTimeout(() => setExtractStatus("idle"), 3000);
@@ -160,7 +138,7 @@ export function ProfileClient({ initialProfile }: Props) {
 
       const result = await saveProfile(currentForm);
       if (result.success) {
-        setForm(EMPTY_FORM);
+        lastSavedRef.current = currentForm;
         setSaveStatus("success");
         setTimeout(() => setSaveStatus("idle"), 3000);
       } else {
