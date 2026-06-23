@@ -1,24 +1,14 @@
 import { NextResponse } from "next/server";
-import { createInsforgeServer } from "@/lib/insforge-server";
+import { requireUser, AuthError } from "@/lib/require-user";
 import { getResumeFilePipeline } from "@/lib/resume-file-pipeline";
 
 export const runtime = "nodejs";
 
 export async function GET() {
   try {
-    const insforge = await createInsforgeServer();
+    const { user, insforge } = await requireUser();
 
-    const { data: authData, error: authError } =
-      await insforge.auth.getCurrentUser();
-
-    if (authError || !authData?.user) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      );
-    }
-
-    const result = await getResumeFilePipeline(insforge, authData.user.id);
+    const result = await getResumeFilePipeline(insforge, user.id);
 
     if (!result.success) {
       return NextResponse.json(
@@ -36,6 +26,13 @@ export async function GET() {
       },
     });
   } catch (error) {
+    if (error instanceof AuthError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.status },
+      );
+    }
+
     console.error("[api/resume/file]", error);
     return NextResponse.json(
       { success: false, error: "Failed to load resume." },

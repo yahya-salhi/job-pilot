@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createInsforgeServer } from "@/lib/insforge-server";
+import { requireUser, AuthError } from "@/lib/require-user";
 import { computeIsComplete } from "@/lib/profile-completion";
 import { validateResumeFile } from "@/lib/resume-upload";
 import { formToDb } from "@/lib/profile-mapper";
@@ -10,18 +10,11 @@ import type { ProfileFormData } from "@/types";
 
 export async function saveProfile(formData: ProfileFormData) {
   try {
-    const insforge = await createInsforgeServer();
-
-    const { data: authData, error: authError } =
-      await insforge.auth.getCurrentUser();
-
-    if (authError || !authData?.user) {
-      return { success: false, error: "Please sign in to save your profile." };
-    }
+    const { user, insforge } = await requireUser();
 
     const isComplete = computeIsComplete(formData);
 
-    const profileRecord = formToDb(formData, authData.user.id, isComplete);
+    const profileRecord = formToDb(formData, user.id, isComplete);
 
     const { error } = await insforge.database
       .from("profiles")
@@ -37,6 +30,10 @@ export async function saveProfile(formData: ProfileFormData) {
     revalidatePath("/profile");
     return { success: true, isComplete };
   } catch (error) {
+    if (error instanceof AuthError) {
+      return { success: false, error: error.message };
+    }
+
     console.error("[actions/profile]", error);
     return { success: false, error: "Failed to save profile." };
   }
@@ -44,14 +41,7 @@ export async function saveProfile(formData: ProfileFormData) {
 
 export async function uploadResume(formData: FormData) {
   try {
-    const insforge = await createInsforgeServer();
-
-    const { data: authData, error: authError } =
-      await insforge.auth.getCurrentUser();
-
-    if (authError || !authData?.user) {
-      return { success: false, error: "Please sign in to upload a resume." };
-    }
+    const { user, insforge } = await requireUser();
 
     const fileEntry = formData.get("file");
     if (!(fileEntry instanceof File)) {
@@ -63,7 +53,7 @@ export async function uploadResume(formData: FormData) {
       return { success: false, error: validationError };
     }
 
-    const storagePath = manualResumePath(authData.user.id);
+    const storagePath = manualResumePath(user.id);
     const { data, error } = await insforge.storage
       .from(RESUMES_BUCKET)
       .upload(storagePath, fileEntry);
@@ -75,6 +65,10 @@ export async function uploadResume(formData: FormData) {
 
     return { success: true, url: data.url, key: storagePath };
   } catch (error) {
+    if (error instanceof AuthError) {
+      return { success: false, error: error.message };
+    }
+
     console.error("[actions/profile]", error);
     return { success: false, error: "Failed to upload resume." };
   }

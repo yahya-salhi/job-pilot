@@ -1,21 +1,18 @@
 import { redirect } from "next/navigation";
-import { createInsforgeServer } from "@/lib/insforge-server";
+import { requireUser, AuthError } from "@/lib/require-user";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ProfileClient } from "@/components/profile/ProfileClient";
 import { dbToForm } from "@/lib/profile-mapper";
 
 export default async function ProfilePage() {
-  const insforge = await createInsforgeServer();
-
-  const { data: authData, error: authError } =
-    await insforge.auth.getCurrentUser();
-
-  if (authError || !authData?.user) {
-    redirect("/login");
+  let user: any, insforge: any;
+  try {
+    ({ user, insforge } = await requireUser());
+  } catch (error) {
+    if (error instanceof AuthError) redirect("/login");
+    throw error;
   }
-
-  const user = authData.user;
 
   const { data: profile } = await insforge.database
     .from("profiles")

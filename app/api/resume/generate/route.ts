@@ -1,24 +1,14 @@
 import { NextResponse } from "next/server";
-import { createInsforgeServer } from "@/lib/insforge-server";
+import { requireUser, AuthError } from "@/lib/require-user";
 import { generateResumePipeline } from "@/lib/resume-generation-pipeline";
 
 export const runtime = "nodejs";
 
 export async function POST() {
   try {
-    const insforge = await createInsforgeServer();
+    const { user, insforge } = await requireUser();
 
-    const { data: authData, error: authError } =
-      await insforge.auth.getCurrentUser();
-
-    if (authError || !authData?.user) {
-      return NextResponse.json(
-        { success: false, error: "Please sign in to generate a resume." },
-        { status: 401 },
-      );
-    }
-
-    const result = await generateResumePipeline(insforge, authData.user.id);
+    const result = await generateResumePipeline(insforge, user.id);
 
     if (!result.success) {
       return NextResponse.json(
@@ -29,6 +19,13 @@ export async function POST() {
 
     return NextResponse.json({ success: true, url: result.url, storageKey: result.storageKey });
   } catch (error) {
+    if (error instanceof AuthError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.status },
+      );
+    }
+
     console.error("[api/resume/generate]", error);
     return NextResponse.json(
       {
