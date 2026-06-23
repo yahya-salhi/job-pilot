@@ -1,10 +1,17 @@
 import OpenAI from "openai";
 
 const DEFAULT_RESUME_EXTRACT_MODEL = "meta-llama/llama-3.1-8b-instruct";
+const DEFAULT_RESUME_GENERATE_MODEL = "meta-llama/llama-3.1-8b-instruct";
 
 export function getResumeExtractModel(): string {
   return (
     process.env.OPENROUTER_RESUME_EXTRACT_MODEL ?? DEFAULT_RESUME_EXTRACT_MODEL
+  );
+}
+
+export function getResumeGenerateModel(): string {
+  return (
+    process.env.OPENROUTER_RESUME_GENERATE_MODEL ?? DEFAULT_RESUME_GENERATE_MODEL
   );
 }
 

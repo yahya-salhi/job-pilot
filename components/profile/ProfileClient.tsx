@@ -22,6 +22,7 @@ type Props = {
 
 type SaveStatus = "idle" | "saving" | "success" | "error";
 type ExtractStatus = "idle" | "extracting" | "success" | "error";
+type GenerateStatus = "idle" | "generating" | "success" | "error";
 
 export function ProfileClient({ initialProfile }: Props) {
   const EMPTY_FORM: ProfileFormData = {
@@ -51,8 +52,10 @@ export function ProfileClient({ initialProfile }: Props) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [extractStatus, setExtractStatus] = useState<ExtractStatus>("idle");
+  const [generateStatus, setGenerateStatus] = useState<GenerateStatus>("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [extractError, setExtractError] = useState("");
+  const [generateError, setGenerateError] = useState("");
   const [isPending, startTransition] = useTransition();
 
   const onChange: ProfileOnChange = useCallback(<K extends keyof ProfileFormData>(
@@ -99,6 +102,35 @@ export function ProfileClient({ initialProfile }: Props) {
     } catch {
       setExtractStatus("error");
       setExtractError("Failed to extract profile from resume. Please try again.");
+    }
+  };
+
+  const handleGenerate = async () => {
+    setGenerateStatus("generating");
+    setGenerateError("");
+
+    try {
+      const response = await fetch("/api/resume/generate", { method: "POST" });
+      const data = (await response.json()) as {
+        success: boolean;
+        error?: string;
+        url?: string;
+      };
+
+      if (!response.ok || !data.success) {
+        setGenerateStatus("error");
+        setGenerateError(data.error ?? "Failed to generate resume.");
+        return;
+      }
+
+      if (data.url) {
+        setForm((prev) => ({ ...prev, resumePdfUrl: data.url! }));
+      }
+      setGenerateStatus("success");
+      setTimeout(() => setGenerateStatus("idle"), 3000);
+    } catch {
+      setGenerateStatus("error");
+      setGenerateError("Failed to generate resume. Please try again.");
     }
   };
 
@@ -161,6 +193,9 @@ export function ProfileClient({ initialProfile }: Props) {
           onExtract={handleExtract}
           isExtracting={extractStatus === "extracting"}
           extractError={extractError}
+          onGenerate={handleGenerate}
+          isGenerating={generateStatus === "generating"}
+          generateError={generateError}
         />
 
         <div className="bg-surface border border-border rounded-2xl shadow-sm overflow-hidden">

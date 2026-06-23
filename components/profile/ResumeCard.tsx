@@ -9,6 +9,9 @@ type Props = {
   onExtract: () => void;
   isExtracting: boolean;
   extractError: string;
+  onGenerate: () => void;
+  isGenerating: boolean;
+  generateError: string;
 };
 
 export function ResumeCard({
@@ -18,6 +21,9 @@ export function ResumeCard({
   onExtract,
   isExtracting,
   extractError,
+  onGenerate,
+  isGenerating,
+  generateError,
 }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -66,8 +72,26 @@ export function ResumeCard({
             <>
               <p className="text-sm font-bold text-accent">{displayName}</p>
               <p className="text-xs text-text-muted mt-1">
-                {selectedFile ? "Ready to upload — save profile to confirm" : "Currently saved"}
+                {selectedFile
+                  ? "Ready to upload — save profile to confirm"
+                  : resumeUrl
+                  ? "Currently saved"
+                  : ""}
               </p>
+              {resumeUrl && !selectedFile && (
+                <a
+                  href="/api/resume/file"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="inline-flex items-center gap-1 mt-2 text-xs font-medium text-accent hover:text-accent-dark transition-colors"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Open PDF
+                </a>
+              )}
             </>
           ) : (
             <>
@@ -116,18 +140,24 @@ export function ResumeCard({
         <p className="text-sm text-error font-medium">{extractError}</p>
       )}
 
+      {generateError && (
+        <p className="text-sm text-error font-medium">{generateError}</p>
+      )}
+
       <div className="flex items-center justify-between pt-4 border-t border-border-light">
         <p className="text-xs text-text-secondary">
           Need a fresh document based on the fields below?
         </p>
         <button
           type="button"
-          className="bg-accent text-white px-4 py-2 rounded-md text-xs font-medium flex items-center gap-2 hover:bg-accent-dark transition-colors"
+          onClick={onGenerate}
+          disabled={isGenerating}
+          className="bg-accent text-white px-4 py-2 rounded-md text-xs font-medium flex items-center gap-2 hover:bg-accent-dark transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
             <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zM6 20V4h7v5h5v11H6z" />
           </svg>
-          Generate Resume from Profile
+          {isGenerating ? "Generating..." : "Generate Resume from Profile"}
         </button>
       </div>
     </div>
