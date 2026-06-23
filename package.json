@@ -10,9 +10,11 @@
   },
   "dependencies": {
     "@insforge/sdk": "^1.3.1",
+    "@react-pdf/renderer": "^4.5.1",
     "next": "16.2.7",
     "openai": "^6.44.0",
     "pdf-parse": "^2.4.5",
+    "playwright": "^1.61.0",
     "posthog-js": "^1.386.3",
     "posthog-node": "^5.21.2",
     "react": "19.2.4",

@@ -1,6 +1,14 @@
 "use client";
 
 import type { ProfileFormData, ProfileOnChange } from "@/types";
+import {
+  REMOTE_PREFERENCES,
+  REMOTE_PREFERENCE_LABELS,
+  COVER_LETTER_TONES,
+  COVER_LETTER_TONE_LABELS,
+  type RemotePreference,
+  type CoverLetterTone,
+} from "@/lib/profile-constants";
 
 type Props = {
   form: ProfileFormData;
@@ -40,13 +48,14 @@ export function JobPreferencesForm({ form, onChange }: Props) {
               <select
                 id="remote-pref"
                 value={form.remotePreference}
-                onChange={(e) => onChange("remotePreference", e.target.value)}
+                onChange={(e) => onChange("remotePreference", e.target.value as RemotePreference)}
                 className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary appearance-none focus:ring-1 focus:ring-accent focus:border-accent outline-none"
               >
-                <option value="any">Any</option>
-                <option value="remote">Remote</option>
-                <option value="onsite">On-site</option>
-                <option value="hybrid">Hybrid</option>
+                {REMOTE_PREFERENCES.map((value) => (
+                  <option key={value} value={value}>
+                    {REMOTE_PREFERENCE_LABELS[value]}
+                  </option>
+                ))}
               </select>
               <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -99,12 +108,14 @@ export function JobPreferencesForm({ form, onChange }: Props) {
             <select
               id="cover-letter-tone"
               value={form.coverLetterTone}
-              onChange={(e) => onChange("coverLetterTone", e.target.value)}
+                onChange={(e) => onChange("coverLetterTone", e.target.value as CoverLetterTone)}
               className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary appearance-none focus:ring-1 focus:ring-accent focus:border-accent outline-none"
             >
-              <option value="formal">Formal</option>
-              <option value="casual">Casual</option>
-              <option value="enthusiastic">Enthusiastic</option>
+              {COVER_LETTER_TONES.map((value) => (
+                <option key={value} value={value}>
+                  {COVER_LETTER_TONE_LABELS[value]}
+                </option>
+              ))}
             </select>
             <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

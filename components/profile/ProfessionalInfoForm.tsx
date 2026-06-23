@@ -2,6 +2,11 @@
 
 import { useState } from "react";
 import type { ProfileFormData, ProfileOnChange } from "@/types";
+import {
+  EXPERIENCE_LEVELS,
+  EXPERIENCE_LEVEL_LABELS,
+  type ExperienceLevel,
+} from "@/lib/profile-constants";
 
 type Props = {
   form: ProfileFormData;
@@ -73,13 +78,14 @@ export function ProfessionalInfoForm({ form, onChange }: Props) {
               <select
                 id="exp-level"
                 value={form.experienceLevel}
-                onChange={(e) => onChange("experienceLevel", e.target.value)}
+                onChange={(e) => onChange("experienceLevel", e.target.value as ExperienceLevel)}
                 className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary appearance-none focus:ring-1 focus:ring-accent focus:border-accent outline-none"
               >
-                <option value="junior">Junior</option>
-                <option value="mid">Mid-Level</option>
-                <option value="senior">Senior</option>
-                <option value="lead">Lead / Manager</option>
+                {EXPERIENCE_LEVELS.map((value) => (
+                  <option key={value} value={value}>
+                    {EXPERIENCE_LEVEL_LABELS[value]}
+                  </option>
+                ))}
               </select>
               <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -97,8 +103,7 @@ export function ProfessionalInfoForm({ form, onChange }: Props) {
             </label>
             <input
               id="years-exp"
-              type="number"
-              min="0"
+              type="text"
               value={form.yearsExperience}
               onChange={(e) => onChange("yearsExperience", e.target.value)}
               className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"

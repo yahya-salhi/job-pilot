@@ -2,19 +2,17 @@ import "@/lib/pdf-parse-setup";
 import { PDFParse } from "pdf-parse";
 import type { Education, WorkExperience } from "@/types";
 import type { ExtractedProfilePatch } from "@/lib/merge-profile-extraction";
+import {
+  EXPERIENCE_LEVELS,
+  WORK_AUTHORIZATIONS,
+  REMOTE_PREFERENCES,
+  COVER_LETTER_TONES,
+  DEGREES,
+} from "@/lib/profile-constants";
 
 export type { ExtractedProfilePatch } from "@/lib/merge-profile-extraction";
 
 const MIN_RESUME_TEXT_LENGTH = 100;
-
-const EXPERIENCE_LEVELS = new Set(["junior", "mid", "senior", "lead"]);
-const WORK_AUTHORIZATIONS = new Set([
-  "citizen",
-  "permanent_resident",
-  "visa_required",
-]);
-const REMOTE_PREFERENCES = new Set(["remote", "onsite", "hybrid", "any"]);
-const COVER_LETTER_TONES = new Set(["formal", "casual", "enthusiastic"]);
 
 export async function extractTextFromPdf(buffer: Buffer): Promise<string> {
   const parser = new PDFParse({ data: buffer });
@@ -98,18 +96,18 @@ export function parseExtractedProfile(
 }
 
 export function buildResumeExtractionPrompt(resumeText: string): string {
-  return `Extract structured profile data from this resume text. Return ONLY valid JSON matching this shape (omit fields you cannot find):
+  return `Extract structured profile data from this resume text. Return ONLY valid JSON matching this shape. CRITICAL: If you cannot confidently find a value, OMIT the field entirely — do NOT guess, invent, or return placeholder text.
 
 {
-  "fullName": "string",
+  "fullName": "string (the person's actual first and last name — NEVER a job title)",
   "phone": "string",
   "location": "string",
-  "linkedinUrl": "string",
-  "portfolioUrl": "string",
+  "linkedinUrl": "string (must be a full URL like https://linkedin.com/in/... or omit)",
+  "portfolioUrl": "string (must be a full URL, or omit)",
   "workAuthorization": "citizen | permanent_resident | visa_required",
-  "currentTitle": "string",
+  "currentTitle": "string (most recent job title)",
   "experienceLevel": "junior | mid | senior | lead",
-  "yearsExperience": "string (number as string)",
+  "yearsExperience": "string (number as string, e.g. \"5\" or \"10+\")",
   "skills": ["string"],
   "industries": ["string"],
   "workExperience": [{
@@ -134,11 +132,14 @@ export function buildResumeExtractionPrompt(resumeText: string): string {
 }
 
 Rules:
+- fullName MUST be the person's actual name (e.g. "John Smith"), NEVER a job title or headline.
+- linkedinUrl and portfolioUrl MUST be valid full URLs or be omitted entirely.
 - Do not include email.
 - Include up to 3 work experience entries, most recent first.
 - Use enum values exactly as listed.
 - Infer experienceLevel and yearsExperience from work history when possible.
 - If unsure about workAuthorization, remotePreference, or coverLetterTone, omit them.
+- When in doubt, OMIT the field. Never return placeholder text like "LinkedIn" or "Portfolio".
 
 RESUME TEXT:
 ${resumeText}`;
@@ -150,9 +151,10 @@ function asNonEmptyString(value: unknown): string | null {
   return trimmed.length > 0 ? trimmed : null;
 }
 
-function asEnum(value: unknown, allowed: Set<string>): string | null {
+function asEnum<T extends string>(value: unknown, allowed: readonly T[]): T | null {
   if (typeof value !== "string") return null;
-  return allowed.has(value) ? value : null;
+  const trimmed = value.trim();
+  return (allowed as readonly string[]).includes(trimmed) ? (trimmed as T) : null;
 }
 
 function asStringArray(value: unknown): string[] {
@@ -196,7 +198,7 @@ function asEducation(value: unknown): Education | null {
   if (!value || typeof value !== "object") return null;
 
   const edu = value as Record<string, unknown>;
-  const degree = asNonEmptyString(edu.degree) ?? "";
+  const degree = asEnum(edu.degree, DEGREES) ?? "";
   const field = asNonEmptyString(edu.field) ?? "";
   const institution = asNonEmptyString(edu.institution) ?? "";
   const graduationYear = asNonEmptyString(edu.graduationYear) ?? "";

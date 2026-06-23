@@ -1,6 +1,11 @@
 "use client";
 
 import type { ProfileFormData, ProfileOnChange } from "@/types";
+import {
+  DEGREES,
+  DEGREE_LABELS,
+  type Degree,
+} from "@/lib/profile-constants";
 
 type Props = {
   form: ProfileFormData;
@@ -30,14 +35,14 @@ export function EducationForm({ form, onChange }: Props) {
             <select
               id="degree"
               value={form.education.degree}
-              onChange={(e) => updateEducation("degree", e.target.value)}
+              onChange={(e) => updateEducation("degree", e.target.value as Degree)}
               className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary appearance-none focus:ring-1 focus:ring-accent focus:border-accent outline-none"
             >
-              <option value="">Select degree</option>
-              <option value="High School">High School</option>
-              <option value="Bachelor's">Bachelor&apos;s</option>
-              <option value="Master's">Master&apos;s</option>
-              <option value="PhD">PhD</option>
+              {DEGREES.map((value) => (
+                <option key={value} value={value}>
+                  {DEGREE_LABELS[value]}
+                </option>
+              ))}
             </select>
             <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

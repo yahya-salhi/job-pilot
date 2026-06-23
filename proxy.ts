@@ -31,7 +31,7 @@ function toCookieStore(
   };
 }
 
-export async function proxy(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const response = NextResponse.next({ request });
 
   const { accessToken } = await updateSession({

@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
 import { requireUser, AuthError } from "@/lib/require-user";
-import { extractResumePipeline } from "@/lib/resume-extraction-pipeline";
+import { getResumeFilePipeline } from "@/lib/resume-file-pipeline";
 
 export const runtime = "nodejs";
 
-export async function POST() {
+export async function GET() {
   try {
     const { user, insforge } = await requireUser();
 
-    const result = await extractResumePipeline(insforge, user.id);
+    const result = await getResumeFilePipeline(insforge, user.id);
 
     if (!result.success) {
       return NextResponse.json(
@@ -17,7 +17,14 @@ export async function POST() {
       );
     }
 
-    return NextResponse.json({ success: true, profilePatch: result.profilePatch });
+    return new NextResponse(new Uint8Array(result.buffer), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `inline; filename="${result.filename}"`,
+        "Cache-Control": "private, max-age=3600",
+      },
+    });
   } catch (error) {
     if (error instanceof AuthError) {
       return NextResponse.json(
@@ -26,12 +33,9 @@ export async function POST() {
       );
     }
 
-    console.error("[api/resume/extract]", error);
+    console.error("[api/resume/file]", error);
     return NextResponse.json(
-      {
-        success: false,
-        error: "Failed to extract profile from resume. Please try again.",
-      },
+      { success: false, error: "Failed to load resume." },
       { status: 500 },
     );
   }
