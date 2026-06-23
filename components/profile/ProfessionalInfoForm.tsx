@@ -97,8 +97,7 @@ export function ProfessionalInfoForm({ form, onChange }: Props) {
             </label>
             <input
               id="years-exp"
-              type="number"
-              min="0"
+              type="text"
               value={form.yearsExperience}
               onChange={(e) => onChange("yearsExperience", e.target.value)}
               className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
