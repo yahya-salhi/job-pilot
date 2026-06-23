@@ -7,11 +7,12 @@ import {
   type ResumeContent,
   type ContactInfo,
 } from "@/lib/resume-pdf";
+import { generatedResumePath, RESUMES_BUCKET } from "@/lib/storage-paths";
 
 type InsforgeClient = Awaited<ReturnType<typeof import("./insforge-server").createInsforgeServer>>;
 
 export type GenerateResult =
-  | { success: true; url: string }
+  | { success: true; url: string; storageKey: string }
   | { success: false; error: string; status: number };
 
 type ProfileRecord = {
@@ -154,12 +155,12 @@ export async function generateResumePipeline(
     contact,
   );
 
-  const storagePath = `${userId}/resume-generated.pdf`;
+  const storagePath = generatedResumePath(userId);
   const pdfBlob = new Blob([new Uint8Array(pdfBuffer)], {
     type: "application/pdf",
   });
   const { data: uploadData, error: uploadError } = await insforge.storage
-    .from("resumes")
+    .from(RESUMES_BUCKET)
     .upload(storagePath, pdfBlob);
 
   if (uploadError || !uploadData?.url) {
@@ -174,7 +175,7 @@ export async function generateResumePipeline(
 
   const { error: updateError } = await insforge.database
     .from("profiles")
-    .update({ resume_pdf_url: resumePdfUrl })
+    .update({ resume_pdf_url: resumePdfUrl, resume_storage_key: storagePath })
     .eq("id", userId);
 
   if (updateError) {
@@ -184,5 +185,5 @@ export async function generateResumePipeline(
     );
   }
 
-  return { success: true, url: resumePdfUrl };
+  return { success: true, url: resumePdfUrl, storageKey: storagePath };
 }

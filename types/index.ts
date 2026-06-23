@@ -43,6 +43,7 @@ export type ProfileFormData = {
   preferredLocations: string;
   coverLetterTone: CoverLetterTone;
   resumePdfUrl: string;
+  resumeStorageKey: string;
 };
 
 export type ProfileOnChange = <K extends keyof ProfileFormData>(

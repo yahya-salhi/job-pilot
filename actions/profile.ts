@@ -5,6 +5,7 @@ import { createInsforgeServer } from "@/lib/insforge-server";
 import { computeIsComplete } from "@/lib/profile-completion";
 import { validateResumeFile } from "@/lib/resume-upload";
 import { formToDb } from "@/lib/profile-mapper";
+import { manualResumePath, RESUMES_BUCKET } from "@/lib/storage-paths";
 import type { ProfileFormData } from "@/types";
 
 export async function saveProfile(formData: ProfileFormData) {
@@ -62,9 +63,9 @@ export async function uploadResume(formData: FormData) {
       return { success: false, error: validationError };
     }
 
-    const storagePath = `${authData.user.id}/resume.pdf`;
+    const storagePath = manualResumePath(authData.user.id);
     const { data, error } = await insforge.storage
-      .from("resumes")
+      .from(RESUMES_BUCKET)
       .upload(storagePath, fileEntry);
 
     if (error || !data?.url) {
@@ -72,7 +73,7 @@ export async function uploadResume(formData: FormData) {
       return { success: false, error: "Failed to upload resume." };
     }
 
-    return { success: true, url: data.url };
+    return { success: true, url: data.url, key: storagePath };
   } catch (error) {
     console.error("[actions/profile]", error);
     return { success: false, error: "Failed to upload resume." };

@@ -93,6 +93,7 @@ export function ProfileClient({ initialProfile }: Props) {
         success: boolean;
         error?: string;
         url?: string;
+        storageKey?: string;
       };
 
       if (!response.ok || !data.success) {
@@ -102,7 +103,11 @@ export function ProfileClient({ initialProfile }: Props) {
       }
 
       if (data.url) {
-        setForm((prev) => ({ ...prev, resumePdfUrl: data.url! }));
+        setForm((prev) => ({
+          ...prev,
+          resumePdfUrl: data.url!,
+          resumeStorageKey: data.storageKey ?? prev.resumeStorageKey,
+        }));
       }
       setGenerateStatus("success");
       setTimeout(() => setGenerateStatus("idle"), 3000);
@@ -130,7 +135,11 @@ export function ProfileClient({ initialProfile }: Props) {
           return;
         }
         if (uploadResult.url) {
-          currentForm = { ...currentForm, resumePdfUrl: uploadResult.url };
+          currentForm = {
+            ...currentForm,
+            resumePdfUrl: uploadResult.url,
+            resumeStorageKey: uploadResult.key ?? currentForm.resumeStorageKey,
+          };
           setForm(currentForm);
         }
         setSelectedFile(null);

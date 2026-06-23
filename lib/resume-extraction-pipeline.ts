@@ -10,6 +10,7 @@ import {
   parseExtractedProfile,
 } from "@/lib/resume-extraction";
 import type { ExtractedProfilePatch } from "@/lib/merge-profile-extraction";
+import { manualResumePath, RESUMES_BUCKET } from "@/lib/storage-paths";
 
 type InsforgeClient = Awaited<ReturnType<typeof import("./insforge-server").createInsforgeServer>>;
 
@@ -21,10 +22,9 @@ export async function extractResumePipeline(
   insforge: InsforgeClient,
   userId: string,
 ): Promise<ExtractResult> {
-  const storagePath = `${userId}/resume.pdf`;
   const { data: fileBlob, error: downloadError } = await insforge.storage
-    .from("resumes")
-    .download(storagePath);
+    .from(RESUMES_BUCKET)
+    .download(manualResumePath(userId));
 
   if (downloadError || !fileBlob) {
     return {

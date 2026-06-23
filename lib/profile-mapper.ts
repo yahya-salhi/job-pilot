@@ -28,6 +28,7 @@ export type ProfileDbRow = {
   preferred_locations: string[] | null;
   cover_letter_tone: string | null;
   resume_pdf_url: string | null;
+  resume_storage_key: string | null;
   is_complete: boolean | null;
 };
 
@@ -53,6 +54,7 @@ export type ProfileDbInsert = {
   preferred_locations: string[];
   cover_letter_tone: string;
   resume_pdf_url: string;
+  resume_storage_key: string;
   is_complete: boolean;
 };
 
@@ -88,6 +90,7 @@ export function dbToForm(
     preferredLocations: (profile?.preferred_locations ?? []).join(", "),
     coverLetterTone: (profile?.cover_letter_tone as ProfileFormData["coverLetterTone"]) ?? COVER_LETTER_TONES[0],
     resumePdfUrl: profile?.resume_pdf_url ?? "",
+    resumeStorageKey: profile?.resume_storage_key ?? "",
   };
 }
 
@@ -130,6 +133,7 @@ export function formToDb(
     preferred_locations: parseCommaList(formData.preferredLocations),
     cover_letter_tone: formData.coverLetterTone,
     resume_pdf_url: formData.resumePdfUrl,
+    resume_storage_key: formData.resumeStorageKey,
     is_complete: isComplete,
   };
 }

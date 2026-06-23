@@ -1,7 +1,7 @@
 import type { Education, ProfileFormData, WorkExperience } from "@/types";
 
 export type ExtractedProfilePatch = Partial<
-  Omit<ProfileFormData, "email" | "resumePdfUrl">
+  Omit<ProfileFormData, "email" | "resumePdfUrl" | "resumeStorageKey">
 >;
 
 export function mergeProfileExtraction(

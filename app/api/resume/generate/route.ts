@@ -27,7 +27,7 @@ export async function POST() {
       );
     }
 
-    return NextResponse.json({ success: true, url: result.url });
+    return NextResponse.json({ success: true, url: result.url, storageKey: result.storageKey });
   } catch (error) {
     console.error("[api/resume/generate]", error);
     return NextResponse.json(
