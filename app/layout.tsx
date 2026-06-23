@@ -26,7 +26,7 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-background text-text-primary font-sans">
+      <body className="min-h-full flex flex-col bg-background text-text-primary font-sans" suppressHydrationWarning>
         <PHProvider>
           <Suspense fallback={null}>
             <PostHogPageView />
