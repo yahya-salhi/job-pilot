@@ -1,4 +1,10 @@
 import type { ProfileFormData, WorkExperience, Education } from "@/types";
+import {
+  WORK_AUTHORIZATIONS,
+  EXPERIENCE_LEVELS,
+  REMOTE_PREFERENCES,
+  COVER_LETTER_TONES,
+} from "@/lib/profile-constants";
 
 export type ProfileDbRow = {
   id?: string;
@@ -68,19 +74,19 @@ export function dbToForm(
     location: profile?.location ?? "",
     linkedinUrl: profile?.linkedin_url ?? "",
     portfolioUrl: profile?.portfolio_url ?? "",
-    workAuthorization: profile?.work_authorization ?? "citizen",
+    workAuthorization: (profile?.work_authorization as ProfileFormData["workAuthorization"]) ?? WORK_AUTHORIZATIONS[0],
     currentTitle: profile?.current_title ?? "",
-    experienceLevel: profile?.experience_level ?? "junior",
+    experienceLevel: (profile?.experience_level as ProfileFormData["experienceLevel"]) ?? EXPERIENCE_LEVELS[0],
     yearsExperience: profile?.years_experience?.toString() ?? "",
     skills: profile?.skills ?? [],
     industries: profile?.industries ?? [],
     workExperience: profile?.work_experience ?? [],
     education: profile?.education ?? { ...EMPTY_EDUCATION },
     jobTitlesSeeking: (profile?.job_titles_seeking ?? []).join(", "),
-    remotePreference: profile?.remote_preference ?? "any",
+    remotePreference: (profile?.remote_preference as ProfileFormData["remotePreference"]) ?? REMOTE_PREFERENCES[0],
     salaryExpectation: profile?.salary_expectation ?? "",
     preferredLocations: (profile?.preferred_locations ?? []).join(", "),
-    coverLetterTone: profile?.cover_letter_tone ?? "formal",
+    coverLetterTone: (profile?.cover_letter_tone as ProfileFormData["coverLetterTone"]) ?? COVER_LETTER_TONES[0],
     resumePdfUrl: profile?.resume_pdf_url ?? "",
   };
 }

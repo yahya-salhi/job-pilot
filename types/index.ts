@@ -1,3 +1,11 @@
+import type {
+  WorkAuthorization,
+  ExperienceLevel,
+  RemotePreference,
+  CoverLetterTone,
+  Degree,
+} from "@/lib/profile-constants";
+
 export type WorkExperience = {
   company: string;
   title: string;
@@ -8,7 +16,7 @@ export type WorkExperience = {
 };
 
 export type Education = {
-  degree: string;
+  degree: Degree;
   field: string;
   institution: string;
   graduationYear: string;
@@ -21,19 +29,19 @@ export type ProfileFormData = {
   location: string;
   linkedinUrl: string;
   portfolioUrl: string;
-  workAuthorization: string;
+  workAuthorization: WorkAuthorization;
   currentTitle: string;
-  experienceLevel: string;
+  experienceLevel: ExperienceLevel;
   yearsExperience: string;
   skills: string[];
   industries: string[];
   workExperience: WorkExperience[];
   education: Education;
   jobTitlesSeeking: string;
-  remotePreference: string;
+  remotePreference: RemotePreference;
   salaryExpectation: string;
   preferredLocations: string;
-  coverLetterTone: string;
+  coverLetterTone: CoverLetterTone;
   resumePdfUrl: string;
 };
 

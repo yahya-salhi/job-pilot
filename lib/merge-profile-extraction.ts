@@ -41,7 +41,7 @@ export function mergeProfileExtraction(
   for (const field of enumFields) {
     const value = extracted[field];
     if (typeof value === "string" && current[field] === initial[field]) {
-      merged[field] = value;
+      (merged as any)[field] = value;
     }
   }
 

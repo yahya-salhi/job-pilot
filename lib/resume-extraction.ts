@@ -2,19 +2,17 @@ import "@/lib/pdf-parse-setup";
 import { PDFParse } from "pdf-parse";
 import type { Education, WorkExperience } from "@/types";
 import type { ExtractedProfilePatch } from "@/lib/merge-profile-extraction";
+import {
+  EXPERIENCE_LEVELS,
+  WORK_AUTHORIZATIONS,
+  REMOTE_PREFERENCES,
+  COVER_LETTER_TONES,
+  DEGREES,
+} from "@/lib/profile-constants";
 
 export type { ExtractedProfilePatch } from "@/lib/merge-profile-extraction";
 
 const MIN_RESUME_TEXT_LENGTH = 100;
-
-const EXPERIENCE_LEVELS = new Set(["junior", "mid", "senior", "lead"]);
-const WORK_AUTHORIZATIONS = new Set([
-  "citizen",
-  "permanent_resident",
-  "visa_required",
-]);
-const REMOTE_PREFERENCES = new Set(["remote", "onsite", "hybrid", "any"]);
-const COVER_LETTER_TONES = new Set(["formal", "casual", "enthusiastic"]);
 
 export async function extractTextFromPdf(buffer: Buffer): Promise<string> {
   const parser = new PDFParse({ data: buffer });
@@ -153,9 +151,10 @@ function asNonEmptyString(value: unknown): string | null {
   return trimmed.length > 0 ? trimmed : null;
 }
 
-function asEnum(value: unknown, allowed: Set<string>): string | null {
+function asEnum<T extends string>(value: unknown, allowed: readonly T[]): T | null {
   if (typeof value !== "string") return null;
-  return allowed.has(value) ? value : null;
+  const trimmed = value.trim();
+  return (allowed as readonly string[]).includes(trimmed) ? (trimmed as T) : null;
 }
 
 function asStringArray(value: unknown): string[] {
@@ -199,7 +198,7 @@ function asEducation(value: unknown): Education | null {
   if (!value || typeof value !== "object") return null;
 
   const edu = value as Record<string, unknown>;
-  const degree = asNonEmptyString(edu.degree) ?? "";
+  const degree = asEnum(edu.degree, DEGREES) ?? "";
   const field = asNonEmptyString(edu.field) ?? "";
   const institution = asNonEmptyString(edu.institution) ?? "";
   const graduationYear = asNonEmptyString(edu.graduationYear) ?? "";
