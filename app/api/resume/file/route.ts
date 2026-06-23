@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createInsforgeServer } from "@/lib/insforge-server";
+import { getResumeFilePipeline } from "@/lib/resume-file-pipeline";
 
 export const runtime = "nodejs";
 
@@ -17,42 +18,20 @@ export async function GET() {
       );
     }
 
-    const userId = authData.user.id;
+    const result = await getResumeFilePipeline(insforge, authData.user.id);
 
-    const { data: profile } = await insforge.database
-      .from("profiles")
-      .select("resume_pdf_url")
-      .eq("id", userId)
-      .single();
-
-    if (!profile?.resume_pdf_url) {
+    if (!result.success) {
       return NextResponse.json(
-        { success: false, error: "No resume found. Upload or generate one first." },
-        { status: 404 },
+        { success: false, error: result.error },
+        { status: result.status },
       );
     }
 
-    const isGenerated = profile.resume_pdf_url.includes("resume-generated.pdf");
-    const storagePath = `${userId}/${isGenerated ? "resume-generated.pdf" : "resume.pdf"}`;
-
-    const { data: fileBlob, error: downloadError } = await insforge.storage
-      .from("resumes")
-      .download(storagePath);
-
-    if (downloadError || !fileBlob) {
-      return NextResponse.json(
-        { success: false, error: "Resume not found." },
-        { status: 404 },
-      );
-    }
-
-    const buffer = Buffer.from(await fileBlob.arrayBuffer());
-
-    return new NextResponse(buffer, {
+    return new NextResponse(new Uint8Array(result.buffer), {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `inline; filename="resume.pdf"`,
+        "Content-Disposition": `inline; filename="${result.filename}"`,
         "Cache-Control": "private, max-age=3600",
       },
     });
