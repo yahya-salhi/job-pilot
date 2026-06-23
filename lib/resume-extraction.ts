@@ -98,18 +98,18 @@ export function parseExtractedProfile(
 }
 
 export function buildResumeExtractionPrompt(resumeText: string): string {
-  return `Extract structured profile data from this resume text. Return ONLY valid JSON matching this shape (omit fields you cannot find):
+  return `Extract structured profile data from this resume text. Return ONLY valid JSON matching this shape. CRITICAL: If you cannot confidently find a value, OMIT the field entirely — do NOT guess, invent, or return placeholder text.
 
 {
-  "fullName": "string",
+  "fullName": "string (the person's actual first and last name — NEVER a job title)",
   "phone": "string",
   "location": "string",
-  "linkedinUrl": "string",
-  "portfolioUrl": "string",
+  "linkedinUrl": "string (must be a full URL like https://linkedin.com/in/... or omit)",
+  "portfolioUrl": "string (must be a full URL, or omit)",
   "workAuthorization": "citizen | permanent_resident | visa_required",
-  "currentTitle": "string",
+  "currentTitle": "string (most recent job title)",
   "experienceLevel": "junior | mid | senior | lead",
-  "yearsExperience": "string (number as string)",
+  "yearsExperience": "string (number as string, e.g. \"5\" or \"10+\")",
   "skills": ["string"],
   "industries": ["string"],
   "workExperience": [{
@@ -134,11 +134,14 @@ export function buildResumeExtractionPrompt(resumeText: string): string {
 }
 
 Rules:
+- fullName MUST be the person's actual name (e.g. "John Smith"), NEVER a job title or headline.
+- linkedinUrl and portfolioUrl MUST be valid full URLs or be omitted entirely.
 - Do not include email.
 - Include up to 3 work experience entries, most recent first.
 - Use enum values exactly as listed.
 - Infer experienceLevel and yearsExperience from work history when possible.
 - If unsure about workAuthorization, remotePreference, or coverLetterTone, omit them.
+- When in doubt, OMIT the field. Never return placeholder text like "LinkedIn" or "Portfolio".
 
 RESUME TEXT:
 ${resumeText}`;
