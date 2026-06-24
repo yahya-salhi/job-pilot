@@ -1,3 +1,6 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import type { JobRow } from "@/types/job";
 
 type Props = {
@@ -54,6 +57,8 @@ function SourceBadge({ source }: { source: string }) {
 }
 
 export function JobsTable({ jobs }: Props) {
+  const router = useRouter();
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full">
@@ -61,6 +66,7 @@ export function JobsTable({ jobs }: Props) {
           <tr className="text-left">
             <th className="pb-3 pr-4 text-xs font-semibold text-text-secondary uppercase tracking-wider">Company</th>
             <th className="pb-3 pr-4 text-xs font-semibold text-text-secondary uppercase tracking-wider">Role</th>
+            <th className="pb-3 pr-4 text-xs font-semibold text-text-secondary uppercase tracking-wider">Description</th>
             <th className="pb-3 pr-4 text-xs font-semibold text-text-secondary uppercase tracking-wider">Match Score</th>
             <th className="pb-3 pr-4 text-xs font-semibold text-text-secondary uppercase tracking-wider">Salary Est.</th>
             <th className="pb-3 pr-4 text-xs font-semibold text-text-secondary uppercase tracking-wider">Source</th>
@@ -72,12 +78,16 @@ export function JobsTable({ jobs }: Props) {
             <tr
               key={job.id}
               className="border-t border-border-light cursor-pointer hover:bg-surface-secondary transition-colors"
+              onClick={() => router.push(`/find-jobs/${job.id}`)}
             >
               <td className="py-3 pr-4">
                 <span className="text-sm font-medium text-text-primary">{job.company}</span>
               </td>
               <td className="py-3 pr-4">
                 <span className="text-sm text-text-primary">{job.title}</span>
+              </td>
+              <td className="py-3 pr-4 max-w-xs">
+                <span className="text-sm text-text-secondary line-clamp-2">{job.about_role ?? "—"}</span>
               </td>
               <td className="py-3 pr-4">
                 <ScoreBar score={job.match_score ?? 0} />
