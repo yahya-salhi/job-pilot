@@ -32,6 +32,7 @@ export async function signInWithOAuthAction(provider: OAuthProvider) {
   const { data, error } = await insforge.auth.signInWithOAuth(provider, {
     redirectTo: `${origin}/api/auth/callback`,
     skipBrowserRedirect: true,
+    additionalParams: { prompt: "select_account" },
   });
 
   if (error || !data?.url) {
