@@ -2,7 +2,6 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { signInWithOAuthAction, type OAuthProvider } from "@/actions/auth";
-import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { useSearchParams } from "next/navigation";
 
@@ -35,8 +34,6 @@ const LoginContent = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-surface">
-      <Navbar />
-
       <main className="grow flex flex-col items-center justify-center px-6 py-12">
         <div className="w-full max-w-md bg-background border border-border-light rounded-2xl shadow-xl overflow-hidden">
           <div className="p-8">
