@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";       
+import { Inter } from "next/font/google";
 import "./globals.css";
-import { PHProvider } from "./providers";       
+import { PHProvider } from "./providers";
 import PostHogPageView from "./PostHogPageView";
 import PostHogAuthHandler from "./PostHogAuthHandler";
+import { NavbarShell } from "./NavbarShell";
 import { Suspense } from "react";
 
 const inter = Inter({
@@ -32,6 +33,7 @@ export default function RootLayout({
             <PostHogPageView />
             <PostHogAuthHandler />
           </Suspense>
+          <NavbarShell />
           {children}
         </PHProvider>
       </body>

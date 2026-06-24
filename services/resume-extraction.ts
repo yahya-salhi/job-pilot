@@ -1,16 +1,16 @@
 import "@/lib/pdf-parse-setup";
 import { PDFParse } from "pdf-parse";
 import type { Education, WorkExperience } from "@/types";
-import type { ExtractedProfilePatch } from "@/lib/merge-profile-extraction";
+import type { ExtractedProfilePatch } from "@/mappers/merge-profile-extraction";
 import {
   EXPERIENCE_LEVELS,
   WORK_AUTHORIZATIONS,
   REMOTE_PREFERENCES,
   COVER_LETTER_TONES,
   DEGREES,
-} from "@/lib/profile-constants";
+} from "@/constants/profile-constants";
 
-export type { ExtractedProfilePatch } from "@/lib/merge-profile-extraction";
+export type { ExtractedProfilePatch } from "@/mappers/merge-profile-extraction";
 
 const MIN_RESUME_TEXT_LENGTH = 100;
 

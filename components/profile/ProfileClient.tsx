@@ -9,11 +9,11 @@ import { WorkExperienceForm } from "@/components/profile/WorkExperienceForm";
 import { EducationForm } from "@/components/profile/EducationForm";
 import { JobPreferencesForm } from "@/components/profile/JobPreferencesForm";
 import { saveProfile, uploadResume } from "@/actions/profile";
-import { getProfileCompletion } from "@/lib/profile-completion";
+import { getProfileCompletion } from "@/constants/profile-completion";
 import {
   mergeProfileExtraction,
   type ExtractedProfilePatch,
-} from "@/lib/merge-profile-extraction";
+} from "@/mappers/merge-profile-extraction";
 import type { ProfileFormData, ProfileOnChange } from "@/types";
 
 type Props = {

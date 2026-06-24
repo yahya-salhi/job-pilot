@@ -5,7 +5,7 @@ import {
   DEGREES,
   DEGREE_LABELS,
   type Degree,
-} from "@/lib/profile-constants";
+} from "@/constants/profile-constants";
 
 type Props = {
   form: ProfileFormData;

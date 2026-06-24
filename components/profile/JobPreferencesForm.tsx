@@ -8,7 +8,7 @@ import {
   COVER_LETTER_TONE_LABELS,
   type RemotePreference,
   type CoverLetterTone,
-} from "@/lib/profile-constants";
+} from "@/constants/profile-constants";
 
 type Props = {
   form: ProfileFormData;

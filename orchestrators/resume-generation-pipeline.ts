@@ -1,15 +1,11 @@
-import {
-  createOpenRouterClient,
-  getResumeGenerateModel,
-} from "@/lib/openrouter";
+import { callLLM, getResumeGenerateModel, safeParseJson } from "@/lib/openrouter";
 import {
   renderResumePdf,
   type ResumeContent,
   type ContactInfo,
-} from "@/lib/resume-pdf";
+} from "@/services/resume-pdf";
+import type { InsforgeClient } from "@/agent/types";
 import { generatedResumePath, RESUMES_BUCKET } from "@/lib/storage-paths";
-
-type InsforgeClient = Awaited<ReturnType<typeof import("./insforge-server").createInsforgeServer>>;
 
 export type GenerateResult =
   | { success: true; url: string; storageKey: string }
@@ -101,41 +97,22 @@ export async function generateResumePipeline(
     };
   }
 
-  let openrouter;
-  try {
-    openrouter = createOpenRouterClient();
-  } catch {
-    return {
-      success: false,
-      error: "AI resume generation is not configured. Contact support.",
-      status: 500,
-    };
-  }
-
-  const completion = await openrouter.chat.completions.create({
+  const llmResult = await callLLM(buildSystemPrompt(), buildUserPrompt(profile), {
     model: getResumeGenerateModel(),
-    response_format: { type: "json_object" },
     temperature: 0.7,
-    max_completion_tokens: 1000,
-    messages: [
-      { role: "system", content: buildSystemPrompt() },
-      { role: "user", content: buildUserPrompt(profile) },
-    ],
+    maxTokens: 1000,
   });
 
-  const content = completion.choices[0]?.message?.content;
-  if (!content) {
+  if (!llmResult.success) {
     return {
       success: false,
-      error: "AI generation returned an empty response. Please try again.",
+      error: "AI generation failed. Please try again.",
       status: 502,
     };
   }
 
-  let resumeContent: ResumeContent;
-  try {
-    resumeContent = JSON.parse(content) as ResumeContent;
-  } catch {
+  const resumeContent = safeParseJson(llmResult.content, null as ResumeContent | null);
+  if (!resumeContent) {
     return {
       success: false,
       error: "AI generation returned invalid data. Please try again.",

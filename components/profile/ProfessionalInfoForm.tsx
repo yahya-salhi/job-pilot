@@ -6,7 +6,7 @@ import {
   EXPERIENCE_LEVELS,
   EXPERIENCE_LEVEL_LABELS,
   type ExperienceLevel,
-} from "@/lib/profile-constants";
+} from "@/constants/profile-constants";
 
 type Props = {
   form: ProfileFormData;

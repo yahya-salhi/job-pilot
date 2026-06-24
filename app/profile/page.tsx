@@ -1,9 +1,8 @@
 import { redirect } from "next/navigation";
 import { requireUser, AuthError } from "@/lib/require-user";
-import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ProfileClient } from "@/components/profile/ProfileClient";
-import { dbToForm } from "@/lib/profile-mapper";
+import { dbToForm } from "@/mappers/profile-mapper";
 
 export default async function ProfilePage() {
   let user: any, insforge: any;
@@ -24,7 +23,6 @@ export default async function ProfilePage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-surface">
-      <Navbar />
       <main className="grow">
         <ProfileClient initialProfile={initialProfile} />
       </main>

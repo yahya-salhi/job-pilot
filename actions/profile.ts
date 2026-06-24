@@ -1,17 +1,15 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireUser, AuthError } from "@/lib/require-user";
-import { computeIsComplete } from "@/lib/profile-completion";
+import { withActionAuth } from "@/lib/with-auth";
+import { computeIsComplete } from "@/constants/profile-completion";
 import { validateResumeFile } from "@/lib/resume-upload";
-import { formToDb } from "@/lib/profile-mapper";
+import { formToDb } from "@/mappers/profile-mapper";
 import { manualResumePath, RESUMES_BUCKET } from "@/lib/storage-paths";
 import type { ProfileFormData } from "@/types";
 
 export async function saveProfile(formData: ProfileFormData) {
-  try {
-    const { user, insforge } = await requireUser();
-
+  return withActionAuth(async ({ user, insforge }) => {
     const isComplete = computeIsComplete(formData);
 
     const profileRecord = formToDb(formData, user.id, isComplete);
@@ -29,20 +27,11 @@ export async function saveProfile(formData: ProfileFormData) {
 
     revalidatePath("/profile");
     return { success: true, isComplete };
-  } catch (error) {
-    if (error instanceof AuthError) {
-      return { success: false, error: error.message };
-    }
-
-    console.error("[actions/profile]", error);
-    return { success: false, error: "Failed to save profile." };
-  }
+  }, { logLabel: "actions/profile", errorMessage: "Failed to save profile." });
 }
 
 export async function uploadResume(formData: FormData) {
-  try {
-    const { user, insforge } = await requireUser();
-
+  return withActionAuth(async ({ user, insforge }) => {
     const fileEntry = formData.get("file");
     if (!(fileEntry instanceof File)) {
       return { success: false, error: "No file provided." };
@@ -64,12 +53,5 @@ export async function uploadResume(formData: FormData) {
     }
 
     return { success: true, url: data.url, key: storagePath };
-  } catch (error) {
-    if (error instanceof AuthError) {
-      return { success: false, error: error.message };
-    }
-
-    console.error("[actions/profile]", error);
-    return { success: false, error: "Failed to upload resume." };
-  }
+  }, { logLabel: "actions/profile", errorMessage: "Failed to upload resume." });
 }

@@ -1,4 +1,5 @@
 import { createInsforgeServer } from "@/lib/insforge-server";
+import type { InsforgeClient } from "@/agent/types";
 
 export class AuthError extends Error {
   name = "AuthError";
@@ -10,8 +11,6 @@ export class AuthError extends Error {
     super(message);
   }
 }
-
-type InsforgeClient = Awaited<ReturnType<typeof createInsforgeServer>>;
 
 export async function requireUser(): Promise<{
   user: NonNullable<

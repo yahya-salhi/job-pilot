@@ -12,8 +12,8 @@ export function Footer() {
             alt="JobPilot Logo"
             width={120}
             height={32}
-            className="object-contain h-8 w-auto"
-            style={{ height: 'auto' }}
+            className="object-contain h-8"
+            style={{ width: 'auto' }}
           />
         </Link>
 
