@@ -6,10 +6,10 @@ import {
   renderResumePdf,
   type ResumeContent,
   type ContactInfo,
-} from "@/lib/resume-pdf";
+} from "@/services/resume-pdf";
 import { generatedResumePath, RESUMES_BUCKET } from "@/lib/storage-paths";
 
-type InsforgeClient = Awaited<ReturnType<typeof import("./insforge-server").createInsforgeServer>>;
+type InsforgeClient = Awaited<ReturnType<typeof import("../lib/insforge-server").createInsforgeServer>>;
 
 export type GenerateResult =
   | { success: true; url: string; storageKey: string }

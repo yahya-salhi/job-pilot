@@ -4,7 +4,7 @@ import {
   EXPERIENCE_LEVELS,
   REMOTE_PREFERENCES,
   COVER_LETTER_TONES,
-} from "@/lib/profile-constants";
+} from "@/constants/profile-constants";
 
 export type ProfileDbRow = {
   id?: string;

@@ -8,11 +8,11 @@ import {
   extractTextFromPdf,
   isResumeTextSufficient,
   parseExtractedProfile,
-} from "@/lib/resume-extraction";
-import type { ExtractedProfilePatch } from "@/lib/merge-profile-extraction";
+} from "@/services/resume-extraction";
+import type { ExtractedProfilePatch } from "@/mappers/merge-profile-extraction";
 import { manualResumePath, RESUMES_BUCKET } from "@/lib/storage-paths";
 
-type InsforgeClient = Awaited<ReturnType<typeof import("./insforge-server").createInsforgeServer>>;
+type InsforgeClient = Awaited<ReturnType<typeof import("../lib/insforge-server").createInsforgeServer>>;
 
 export type ExtractResult =
   | { success: true; profilePatch: ExtractedProfilePatch }

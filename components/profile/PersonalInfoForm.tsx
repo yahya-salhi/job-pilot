@@ -5,7 +5,7 @@ import {
   WORK_AUTHORIZATIONS,
   WORK_AUTHORIZATION_LABELS,
   type WorkAuthorization,
-} from "@/lib/profile-constants";
+} from "@/constants/profile-constants";
 
 type Props = {
   form: ProfileFormData;

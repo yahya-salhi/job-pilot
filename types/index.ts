@@ -4,7 +4,7 @@ import type {
   RemotePreference,
   CoverLetterTone,
   Degree,
-} from "@/lib/profile-constants";
+} from "@/constants/profile-constants";
 
 export type WorkExperience = {
   company: string;

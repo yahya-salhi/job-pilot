@@ -1,13 +1,11 @@
 import { NextResponse } from "next/server";
-import { requireUser, AuthError } from "@/lib/require-user";
-import { getResumeFilePipeline } from "@/lib/resume-file-pipeline";
+import { withAuth } from "@/lib/with-auth";
+import { getResumeFilePipeline } from "@/orchestrators/resume-file-pipeline";
 
 export const runtime = "nodejs";
 
 export async function GET() {
-  try {
-    const { user, insforge } = await requireUser();
-
+  return withAuth(async ({ user, insforge }) => {
     const result = await getResumeFilePipeline(insforge, user.id);
 
     if (!result.success) {
@@ -25,18 +23,5 @@ export async function GET() {
         "Cache-Control": "private, max-age=3600",
       },
     });
-  } catch (error) {
-    if (error instanceof AuthError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: error.status },
-      );
-    }
-
-    console.error("[api/resume/file]", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to load resume." },
-      { status: 500 },
-    );
-  }
+  }, { logLabel: "api/resume/file", errorMessage: "Failed to load resume." });
 }
