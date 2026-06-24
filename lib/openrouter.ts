@@ -31,3 +31,52 @@ export function createOpenRouterClient(): OpenAI {
     baseURL: "https://openrouter.ai/api/v1",
   });
 }
+
+type CallLLMOptions = {
+  model?: string;
+  temperature?: number;
+  maxTokens?: number;
+};
+
+type CallLLMResult =
+  | { success: true; content: string }
+  | { success: false; error: string };
+
+export async function callLLM(
+  systemPrompt: string,
+  userPrompt: string,
+  opts?: CallLLMOptions,
+): Promise<CallLLMResult> {
+  let openrouter: OpenAI;
+  try {
+    openrouter = createOpenRouterClient();
+  } catch {
+    return { success: false, error: "AI is not configured. Contact support." };
+  }
+
+  try {
+    const response = await openrouter.chat.completions.create({
+      model: opts?.model ?? getScoringModel(),
+      response_format: { type: "json_object" },
+      temperature: opts?.temperature ?? 0.3,
+      ...(opts?.maxTokens !== undefined ? { max_tokens: opts.maxTokens } : {}),
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+    });
+
+    const content = response.choices[0]?.message?.content;
+    if (!content) {
+      return { success: false, error: "AI returned an empty response." };
+    }
+
+    return { success: true, content };
+  } catch (error) {
+    console.error("[openrouter/callLLM]", error);
+    return {
+      success: false,
+      error: "AI request failed. Please try again.",
+    };
+  }
+}

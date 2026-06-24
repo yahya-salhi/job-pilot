@@ -1,15 +1,13 @@
-import { createOpenRouterClient, getScoringModel } from "@/lib/openrouter";
+import { callLLM } from "@/lib/openrouter";
 import type { JobScoreResult } from "./types";
 
 export async function scoreJob(
-  openrouter: ReturnType<typeof createOpenRouterClient>,
   jobTitle: string,
   company: string,
   description: string,
   userSkills: string[],
   profileSummary: string,
 ): Promise<JobScoreResult> {
-  const model = getScoringModel();
   const skillsList = userSkills.length > 0
     ? userSkills.join(", ")
     : "No skills listed yet";
@@ -39,19 +37,12 @@ CANDIDATE:
 Skills: ${skillsList}
 Profile: ${profileSummary || "No profile details available"}`;
 
-  const response = await openrouter.chat.completions.create({
-    model,
-    response_format: { type: "json_object" },
+  const result = await callLLM(systemPrompt, userPrompt, {
     temperature: 0.3,
-    max_tokens: 300,
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: userPrompt },
-    ],
+    maxTokens: 300,
   });
 
-  const content = response.choices[0]?.message?.content;
-  if (!content) {
+  if (!result.success) {
     return {
       matchScore: 0,
       matchReason: "Failed to score this job.",
@@ -61,7 +52,7 @@ Profile: ${profileSummary || "No profile details available"}`;
   }
 
   try {
-    const parsed = JSON.parse(content) as JobScoreResult;
+    const parsed = JSON.parse(result.content) as JobScoreResult;
     return {
       matchScore: Math.max(0, Math.min(100, parsed.matchScore || 0)),
       matchReason: parsed.matchReason || "No match reason provided.",

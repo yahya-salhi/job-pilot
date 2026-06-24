@@ -1,4 +1,4 @@
-import { createOpenRouterClient, getScoringModel } from "@/lib/openrouter";
+import { callLLM } from "@/lib/openrouter";
 import { createPostHogServer } from "@/lib/posthog-server";
 import type { InsforgeClient } from "./types";
 
@@ -48,8 +48,6 @@ async function synthesiseDossier(
   },
   companyResearch: Record<string, unknown>,
 ): Promise<ResearchDossier> {
-  const openrouter = createOpenRouterClient();
-
   const systemPrompt = `You are a sharp career strategist preparing a candidate to apply for a specific role. You are given (a) research collected from the company's own website, (b) the job posting, and (c) the candidate's profile. Produce a concise, concrete briefing that gives this specific candidate an edge for this specific role.
 
 Rules:
@@ -88,22 +86,15 @@ Experience: ${profile.years_experience} years, level ${profile.experience_level}
 Skills: ${profile.skills.join(", ")}
 Work history: ${JSON.stringify(profile.work_experience)}`;
 
-  const response = await openrouter.chat.completions.create({
-    model: getScoringModel(),
-    response_format: { type: "json_object" },
+  const result = await callLLM(systemPrompt, userPrompt, {
     temperature: 0.4,
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: userPrompt },
-    ],
   });
 
-  const content = response.choices[0]?.message?.content;
-  if (!content) {
-    throw new Error("Research synthesis returned empty response.");
+  if (!result.success) {
+    throw new Error(result.error);
   }
 
-  const parsed = JSON.parse(content) as ResearchDossier;
+  const parsed = JSON.parse(result.content) as ResearchDossier;
 
   return {
     companyOverview: parsed.companyOverview || "",

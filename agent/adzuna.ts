@@ -1,4 +1,3 @@
-import { createOpenRouterClient } from "@/lib/openrouter";
 import { searchJobs, mapAdzunaJobToScored } from "@/services/adzuna";
 import { MATCH_THRESHOLD } from "@/constants/job-scoring";
 import { createPostHogServer } from "@/lib/posthog-server";
@@ -36,14 +35,12 @@ export async function runAdzunaDiscovery(
     }
 
     const { skills, summary } = await loadUserProfile(insforge, userId);
-    const openrouter = createOpenRouterClient();
 
     let strongMatches = 0;
     let savedCount = 0;
 
     for (const adzunaJob of adzunaJobs) {
       const score = await scoreJob(
-        openrouter,
         adzunaJob.title,
         adzunaJob.company.display_name,
         adzunaJob.description,
