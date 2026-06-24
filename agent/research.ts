@@ -1,6 +1,5 @@
 import { callLLM } from "@/lib/openrouter";
-import { createPostHogServer } from "@/lib/posthog-server";
-import type { InsforgeClient } from "./types";
+import type { InsforgeClient, AnalyticsEvent } from "./types";
 
 export type ResearchDossier = {
   companyOverview: string;
@@ -15,8 +14,8 @@ export type ResearchDossier = {
 };
 
 export type ResearchResult =
-  | { success: true; dossier: ResearchDossier }
-  | { success: false; error: string };
+  | { success: true; dossier: ResearchDossier; events: AnalyticsEvent[] }
+  | { success: false; error: string; events: AnalyticsEvent[] };
 
 function deriveHomepageUrl(
   company: string,
@@ -175,8 +174,6 @@ export async function researchCompany(
   userId: string,
   jobId: string,
 ): Promise<ResearchResult> {
-  const posthog = createPostHogServer();
-
   try {
     const { job, profile } = await loadJobAndProfile(insforge, userId, jobId);
     const homepageUrl = deriveHomepageUrl(job.company, job.redirect_url);
@@ -196,20 +193,22 @@ export async function researchCompany(
       console.error("[agent/research] Failed to save dossier:", updateError);
     }
 
-    posthog.capture({
-      distinctId: userId,
-      event: "company_researched",
-      properties: { userId, jobId, company: job.company },
-    });
-
-    return { success: true, dossier };
+    return {
+      success: true,
+      dossier,
+      events: [
+        {
+          event: "company_researched",
+          properties: { userId, jobId, company: job.company },
+        },
+      ],
+    };
   } catch (error) {
     console.error("[agent/research]", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Research failed.",
+      events: [],
     };
-  } finally {
-    await posthog.shutdown();
   }
 }

@@ -42,6 +42,14 @@ type CallLLMResult =
   | { success: true; content: string }
   | { success: false; error: string };
 
+export function safeParseJson<T>(json: string, fallback: T): T {
+  try {
+    return JSON.parse(json) as T;
+  } catch {
+    return fallback;
+  }
+}
+
 export async function callLLM(
   systemPrompt: string,
   userPrompt: string,

@@ -1,4 +1,4 @@
-import { callLLM } from "@/lib/openrouter";
+import { callLLM, safeParseJson } from "@/lib/openrouter";
 import type { JobScoreResult } from "./types";
 
 export async function scoreJob(
@@ -51,15 +51,8 @@ Profile: ${profileSummary || "No profile details available"}`;
     };
   }
 
-  try {
-    const parsed = JSON.parse(result.content) as JobScoreResult;
-    return {
-      matchScore: Math.max(0, Math.min(100, parsed.matchScore || 0)),
-      matchReason: parsed.matchReason || "No match reason provided.",
-      matchedSkills: Array.isArray(parsed.matchedSkills) ? parsed.matchedSkills : [],
-      missingSkills: Array.isArray(parsed.missingSkills) ? parsed.missingSkills : [],
-    };
-  } catch {
+  const parsed = safeParseJson(result.content, null as JobScoreResult | null);
+  if (!parsed) {
     return {
       matchScore: 0,
       matchReason: "Failed to parse scoring response.",
@@ -67,4 +60,11 @@ Profile: ${profileSummary || "No profile details available"}`;
       missingSkills: [],
     };
   }
+
+  return {
+    matchScore: Math.max(0, Math.min(100, parsed.matchScore || 0)),
+    matchReason: parsed.matchReason || "No match reason provided.",
+    matchedSkills: Array.isArray(parsed.matchedSkills) ? parsed.matchedSkills : [],
+    missingSkills: Array.isArray(parsed.missingSkills) ? parsed.missingSkills : [],
+  };
 }

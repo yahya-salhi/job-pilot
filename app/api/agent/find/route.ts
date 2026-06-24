@@ -1,8 +1,18 @@
 import { NextResponse } from "next/server";
+import { createPostHogServer } from "@/lib/posthog-server";
 import { withAuth } from "@/lib/with-auth";
-import { runAdzunaDiscovery } from "@/agent/adzuna";
+import { runJobDiscovery } from "@/orchestrators/job-discovery";
+import type { AnalyticsEvent } from "@/agent/types";
 
 export const runtime = "nodejs";
+
+async function fireEvents(userId: string, events: AnalyticsEvent[]) {
+  const posthog = createPostHogServer();
+  for (const e of events) {
+    posthog.capture({ distinctId: userId, ...e });
+  }
+  await posthog.shutdown();
+}
 
 export async function POST(request: Request) {
   return withAuth(async ({ user, insforge }) => {
@@ -17,12 +27,14 @@ export async function POST(request: Request) {
       );
     }
 
-    const result = await runAdzunaDiscovery(
+    const result = await runJobDiscovery(
       insforge,
       user.id,
       jobTitle.trim(),
       location.trim(),
     );
+
+    fireEvents(user.id, result.events);
 
     if (!result.success) {
       return NextResponse.json(

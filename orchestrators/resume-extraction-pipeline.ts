@@ -1,5 +1,5 @@
 import "@/lib/pdf-parse-setup";
-import { callLLM, getResumeExtractModel } from "@/lib/openrouter";
+import { callLLM, getResumeExtractModel, safeParseJson } from "@/lib/openrouter";
 import {
   buildResumeExtractionPrompt,
   extractTextFromPdf,
@@ -55,10 +55,8 @@ export async function extractResumePipeline(
     };
   }
 
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(result.content);
-  } catch {
+  const parsed = safeParseJson(result.content, null);
+  if (!parsed) {
     return {
       success: false,
       error: "AI extraction returned invalid data. Please try again.",

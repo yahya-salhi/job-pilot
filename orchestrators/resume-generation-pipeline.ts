@@ -1,4 +1,4 @@
-import { callLLM, getResumeGenerateModel } from "@/lib/openrouter";
+import { callLLM, getResumeGenerateModel, safeParseJson } from "@/lib/openrouter";
 import {
   renderResumePdf,
   type ResumeContent,
@@ -111,10 +111,8 @@ export async function generateResumePipeline(
     };
   }
 
-  let resumeContent: ResumeContent;
-  try {
-    resumeContent = JSON.parse(llmResult.content) as ResumeContent;
-  } catch {
+  const resumeContent = safeParseJson(llmResult.content, null as ResumeContent | null);
+  if (!resumeContent) {
     return {
       success: false,
       error: "AI generation returned invalid data. Please try again.",
