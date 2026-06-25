@@ -1,6 +1,5 @@
+import type { InsforgeClient } from "@/agent/types";
 import { manualResumePath, generatedResumePath, RESUMES_BUCKET } from "@/lib/storage-paths";
-
-type InsforgeClient = Awaited<ReturnType<typeof import("../lib/insforge-server").createInsforgeServer>>;
 
 export type FileResult =
   | { success: true; buffer: Uint8Array; filename: string }
