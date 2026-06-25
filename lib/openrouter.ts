@@ -3,6 +3,7 @@ import OpenAI from "openai";
 const DEFAULT_RESUME_EXTRACT_MODEL = "meta-llama/llama-3.1-8b-instruct";
 const DEFAULT_RESUME_GENERATE_MODEL = "meta-llama/llama-3.1-8b-instruct";
 const DEFAULT_SCORING_MODEL = "openai/gpt-4o";
+const DEFAULT_RESEARCH_MODEL = "meta-llama/llama-3.1-8b-instruct";
 
 export function getResumeExtractModel(): string {
   return (
@@ -18,6 +19,10 @@ export function getResumeGenerateModel(): string {
 
 export function getScoringModel(): string {
   return process.env.OPENROUTER_SCORING_MODEL ?? DEFAULT_SCORING_MODEL;
+}
+
+export function getResearchModel(): string {
+  return process.env.OPENROUTER_RESEARCH_MODEL ?? DEFAULT_RESEARCH_MODEL;
 }
 
 export function createOpenRouterClient(): OpenAI {
