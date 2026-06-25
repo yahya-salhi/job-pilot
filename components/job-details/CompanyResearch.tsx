@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Building2, Loader2 } from "lucide-react";
+import { Building2, Loader2, AlertCircle } from "lucide-react";
 import type { CompanyResearch as CompanyResearchType } from "@/types/job";
 
 type Props = {
@@ -34,6 +34,33 @@ function BulletItems({ items }: { items: string[] }) {
 
 export function CompanyResearch({ jobId, company, companyResearch }: Props) {
   const [researching, setResearching] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleResearch() {
+    setResearching(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/agent/research", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jobId }),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        setError(result.error || "Research failed. Please try again.");
+        return;
+      }
+
+      window.location.reload();
+    } catch {
+      setError("Research failed. Please try again.");
+    } finally {
+      setResearching(false);
+    }
+  }
 
   if (companyResearch) {
     return (
@@ -103,9 +130,16 @@ export function CompanyResearch({ jobId, company, companyResearch }: Props) {
         <p className="text-sm text-text-secondary max-w-sm mb-4">
           Learn more about {company ?? "this company"} — tech stack, culture, interview prep, and how your profile fits.
         </p>
+        {error && (
+          <div className="flex items-center gap-2 text-sm text-error mb-2">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            {error}
+          </div>
+        )}
         <button
           type="button"
           disabled={researching}
+          onClick={handleResearch}
           className="inline-flex items-center gap-1.5 bg-accent text-accent-foreground font-medium text-sm px-4 py-2 rounded-md hover:bg-accent-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {researching ? (
