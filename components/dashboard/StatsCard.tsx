@@ -3,30 +3,22 @@ type Props = {
   value: string;
   trend?: string;
   trendUp?: boolean;
+  subtext?: string;
 };
 
-export function StatsCard({ label, value, trend, trendUp }: Props) {
+export function StatsCard({ label, value, trend, trendUp, subtext }: Props) {
   return (
-    <div className="bg-surface border border-border rounded-2xl p-6 shadow-sm flex flex-col gap-2">
-      <span className="text-sm text-text-secondary font-medium">{label}</span>
-      <span className="text-[30px] font-semibold text-text-primary leading-9">{value}</span>
-      {trend && (
-        <span className="inline-flex items-center self-start gap-1 px-2 py-0.5 bg-success-lightest text-success-darker text-xs font-medium rounded-sm">
-          <svg
-            className={`w-3 h-3 ${trendUp ? "" : "rotate-180"}`}
-            viewBox="0 0 12 12"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M6 9.5V2.5" />
-            <path d="M2.5 6L6 2.5L9.5 6" />
-          </svg>
-          {trend}
-        </span>
-      )}
+    <div className="bg-white border border-gray-200 rounded-[16px] p-6 shadow-[0_2px_4px_rgba(0,0,0,0.01)] flex flex-col">
+      <span className="text-[13.5px] text-gray-500 font-medium tracking-tight">{label}</span>
+      <span className="text-[34px] font-bold text-gray-900 mt-1 mb-2 leading-none">{value}</span>
+      <div className="flex items-center gap-2 mt-auto">
+        {trend && (
+          <span className={`inline-flex items-center px-1.5 py-0.5 rounded-[4px] text-[11px] font-semibold tracking-wide ${trendUp ? "bg-green-100/60 text-green-700" : "bg-red-100/60 text-red-700"}`}>
+            {trend}
+          </span>
+        )}
+        {subtext && <span className="text-[12px] text-gray-400 font-medium">{subtext}</span>}
+      </div>
     </div>
   );
 }

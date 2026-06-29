@@ -8,49 +8,36 @@ type Props = {
   entries: ActivityEntry[];
 };
 
-function ActivityDot({ type }: { type: ActivityEntry["type"] }) {
-  const ringMap = {
-    agent_run: "bg-info-light",
-    company_research: "bg-success-light",
-  };
-
-  const dotMap = {
-    agent_run: "bg-info",
-    company_research: "bg-success-alt",
-  };
-
-  return (
-    <div className="relative flex items-center justify-center w-4 h-4">
-      <div className={`absolute w-4 h-4 rounded-full ${ringMap[type]} border-2 border-white`} />
-      <div className={`relative w-2 h-2 rounded-full ${dotMap[type]}`} />
-    </div>
-  );
-}
-
 export function RecentActivity({ entries }: Props) {
   return (
-    <div className="bg-surface border border-border rounded-2xl p-6 shadow-sm">
-      <h2 className="text-base font-semibold text-text-primary mb-5">Recent Activity</h2>
+    <div className="bg-white border border-gray-200 rounded-[16px] p-6 shadow-[0_2px_4px_rgba(0,0,0,0.01)] h-full">
+      <h2 className="text-[15px] font-semibold text-gray-900 mb-7">Recent Activity</h2>
       {entries.length === 0 ? (
-        <p className="text-sm text-text-secondary text-center py-8">
-          No recent activity yet. Start by finding jobs or researching companies.
+        <p className="text-sm text-gray-500 text-center py-8">
+          No recent activity yet.
         </p>
       ) : (
-        <div className="space-y-0">
-          {entries.map((entry, i) => (
-            <div
-              key={i}
-              className="flex items-start gap-3 py-3 border-t border-border-light first:border-t-0"
-            >
-              <div className="mt-0.5">
-                <ActivityDot type={entry.type} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm text-text-primary leading-5">{entry.description}</p>
-                <p className="text-xs text-text-muted mt-0.5">{entry.timestamp}</p>
-              </div>
-            </div>
-          ))}
+        <div className="relative pl-3">
+          <div className="absolute left-[3px] top-2 bottom-2 w-px bg-gray-100" />
+          <div className="space-y-6">
+            {entries.map((entry, i) => {
+              const colors = ["#8B5CF6", "#60A5FA", "#10B981", "#8B5CF6", "#10B981"];
+              const dotColor = colors[i % colors.length];
+
+              return (
+                <div key={i} className="relative pl-6">
+                  <div className="absolute left-[-15px] top-[5px]">
+                    <div 
+                      className="w-2.5 h-2.5 rounded-full ring-4 ring-white"
+                      style={{ backgroundColor: dotColor }}
+                    />
+                  </div>
+                  <p className="text-[13.5px] text-gray-900 font-medium">{entry.description}</p>
+                  <p className="text-[12.5px] text-gray-400 mt-1">{entry.timestamp}</p>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>
