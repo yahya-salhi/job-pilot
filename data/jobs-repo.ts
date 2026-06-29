@@ -1,6 +1,111 @@
 import type { InsforgeClient } from "@/agent/types";
 import type { ScoredJobData } from "@/services/adzuna";
-import type { CompanyResearch } from "@/types/job";
+import type { CompanyResearch, JobDetail, JobRow } from "@/types/job";
+import { MATCH_THRESHOLD } from "@/constants/job-scoring";
+
+export type JobQueryParams = {
+  userId: string;
+  page: number;
+  pageSize: number;
+  filter?: string;
+  sort?: string;
+  search?: string;
+};
+
+export type PaginatedJobsResult = {
+  jobs: JobRow[];
+  total: number;
+};
+
+export async function getJobsPaginated(
+  insforge: InsforgeClient,
+  params: JobQueryParams,
+): Promise<PaginatedJobsResult> {
+  let query = insforge.database
+    .from("jobs")
+    .select(
+      "id, company, title, match_score, salary, source, found_at, location, job_type, about_role, matched_skills, missing_skills, match_reason, source_url, external_apply_url",
+      { count: "exact" },
+    )
+    .eq("user_id", params.userId);
+
+  const filter = params.filter || "all";
+  const sort = params.sort || "match_score";
+  const search = (params.search || "").trim();
+
+  if (filter === "high") {
+    query = query.gte("match_score", MATCH_THRESHOLD);
+  } else if (filter === "low") {
+    query = query.lt("match_score", MATCH_THRESHOLD);
+  }
+
+  if (search) {
+    query = query.or(
+      `company.ilike.%${search}%,title.ilike.%${search}%`,
+    );
+  }
+
+  if (sort === "newest") {
+    query = query.order("found_at", { ascending: false });
+  } else if (sort === "oldest") {
+    query = query.order("found_at", { ascending: true });
+  } else {
+    query = query.order("match_score", { ascending: false });
+  }
+
+  const start = (params.page - 1) * params.pageSize;
+  const end = start + params.pageSize - 1;
+  query = query.range(start, end);
+
+  const { data, count } = await query;
+  return {
+    jobs: (data ?? []) as unknown as JobRow[],
+    total: count ?? 0,
+  };
+}
+
+export function mapJobRowToDetail(row: Record<string, unknown>): JobDetail {
+  return {
+    id: row.id as string,
+    title: row.title as string | null,
+    company: row.company as string | null,
+    location: row.location as string | null,
+    salary: row.salary as string | null,
+    job_type: row.job_type as string | null,
+    source: row.source as string,
+    source_url: row.source_url as string | null,
+    external_apply_url: row.external_apply_url as string | null,
+    about_role: row.about_role as string | null,
+    responsibilities: row.responsibilities as string[] | null,
+    requirements: row.requirements as string[] | null,
+    nice_to_have: row.nice_to_have as string[] | null,
+    benefits: row.benefits as string[] | null,
+    about_company: row.about_company as string | null,
+    match_score: row.match_score as number | null,
+    match_reason: row.match_reason as string | null,
+    matched_skills: row.matched_skills as string[] | null,
+    missing_skills: row.missing_skills as string[] | null,
+    company_research: row.company_research as CompanyResearch | null,
+    found_at: row.found_at as string,
+  };
+}
+
+export async function getJobById(
+  insforge: InsforgeClient,
+  jobId: string,
+  userId: string,
+): Promise<JobDetail | null> {
+  const { data, error } = await insforge.database
+    .from("jobs")
+    .select("*")
+    .eq("id", jobId)
+    .eq("user_id", userId)
+    .single();
+
+  if (error || !data) return null;
+
+  return mapJobRowToDetail(data as Record<string, unknown>);
+}
 
 export type JobCountResult = { count: number | null };
 export type MatchScoreRow = { match_score: number | null };

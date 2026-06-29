@@ -8,7 +8,8 @@ import { JobDescription } from "@/components/job-details/JobDescription";
 import { CompanyResearch } from "@/components/job-details/CompanyResearch";
 import { JobActions } from "@/components/job-details/JobActions";
 import { Footer } from "@/components/layout/Footer";
-import type { JobDetail, CompanyResearch as CompanyResearchType } from "@/types/job";
+import type { JobDetail } from "@/types/job";
+import { getJobById } from "@/data/jobs-repo";
 
 export default async function JobDetailsPage({
   params,
@@ -24,40 +25,11 @@ export default async function JobDetailsPage({
     const { data: authData } = await insforge.auth.getCurrentUser();
     if (!authData?.user) redirect("/login");
 
-    const { data, error } = await insforge.database
-      .from("jobs")
-      .select("*")
-      .eq("id", id)
-      .eq("user_id", authData.user.id)
-      .single();
+    job = await getJobById(insforge, id, authData.user.id);
 
-    if (error || !data) {
+    if (!job) {
       notFound();
     }
-
-    job = {
-      id: data.id,
-      title: data.title,
-      company: data.company,
-      location: data.location,
-      salary: data.salary,
-      job_type: data.job_type,
-      source: data.source,
-      source_url: data.source_url,
-      external_apply_url: data.external_apply_url,
-      about_role: data.about_role,
-      responsibilities: data.responsibilities,
-      requirements: data.requirements,
-      nice_to_have: data.nice_to_have,
-      benefits: data.benefits,
-      about_company: data.about_company,
-      match_score: data.match_score,
-      match_reason: data.match_reason,
-      matched_skills: data.matched_skills,
-      missing_skills: data.missing_skills,
-      company_research: data.company_research as CompanyResearchType | null,
-      found_at: data.found_at,
-    };
   } catch (error) {
     console.error("[job-details]", error);
     notFound();

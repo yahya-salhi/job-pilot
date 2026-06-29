@@ -6,7 +6,7 @@ import { JobFilters } from "@/components/find-jobs/JobFilters";
 import { JobsTable } from "@/components/find-jobs/JobsTable";
 import { JobsPagination } from "@/components/find-jobs/JobsPagination";
 import type { JobRow } from "@/types/job";
-import { MATCH_THRESHOLD } from "@/constants/job-scoring";
+import { getJobsPaginated } from "@/data/jobs-repo";
 
 const PAGE_SIZE = 20;
 
@@ -33,41 +33,16 @@ export default async function FindJobsPage({
   let totalItems = 0;
 
   try {
-    let query = insforge.database
-      .from("jobs")
-      .select(
-        "id, company, title, match_score, salary, source, found_at, location, job_type, about_role, matched_skills, missing_skills, match_reason, source_url, external_apply_url",
-        { count: "exact" },
-      )
-      .eq("user_id", user.id);
-
-    if (filter === "high") {
-      query = query.gte("match_score", MATCH_THRESHOLD);
-    } else if (filter === "low") {
-      query = query.lt("match_score", MATCH_THRESHOLD);
-    }
-
-    if (search) {
-      query = query.or(
-        `company.ilike.%${search}%,title.ilike.%${search}%`,
-      );
-    }
-
-    if (sort === "newest") {
-      query = query.order("found_at", { ascending: false });
-    } else if (sort === "oldest") {
-      query = query.order("found_at", { ascending: true });
-    } else {
-      query = query.order("match_score", { ascending: false });
-    }
-
-    const start = (currentPage - 1) * PAGE_SIZE;
-    const end = start + PAGE_SIZE - 1;
-    query = query.range(start, end);
-
-    const { data, count } = await query;
-    jobs = (data ?? []) as unknown as JobRow[];
-    totalItems = count ?? 0;
+    const result = await getJobsPaginated(insforge, {
+      userId: user.id,
+      page: currentPage,
+      pageSize: PAGE_SIZE,
+      filter,
+      sort,
+      search,
+    });
+    jobs = result.jobs;
+    totalItems = result.total;
   } catch (error) {
     console.error("[find-jobs]", error);
   }
