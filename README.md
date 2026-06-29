@@ -1,54 +1,87 @@
-# JobPilot
+# JobPilot 🚀
 
-AI-powered job hunting assistant. Set up your profile once, upload your resume, and let the agent discover relevant jobs from Adzuna — scoring each one against your profile using GPT-4o. For jobs you're interested in, it researches the company across their public web pages and builds a structured dossier so you arrive at every application fully informed.
+> Your AI-powered job hunting assistant. Automate discovery, intelligent scoring, and company research.
 
-## Pages
+Job hunting is one of the most repetitive and time-consuming tasks a developer faces. Reading dozens of job descriptions, deciding if a role fits, and researching companies from scratch takes hours. **JobPilot** eliminates the prep work. Set up your profile once, and let the agent discover relevant jobs, score them against your skills using GPT-4o, and build structured company dossiers before you apply.
 
-| Route | Page |
-|-------|------|
-| `/` | Homepage |
-| `/login` | Auth (Google + GitHub OAuth) |
-| `/dashboard` | Overview, stats, recent activity, analytics |
-| `/find-jobs` | Search jobs, filter, sort, paginated list |
-| `/find-jobs/[id]` | Job details + company research dossier |
-| `/profile` | Profile form, resume upload & management |
+## ✨ Key Features
 
-## Tech Stack
+- **Intelligent Job Discovery**: Integrates with the Adzuna API to fetch real-time tech jobs based on your desired title and location.
+- **AI Match Scoring (GPT-4o)**: Every job is scored (0-100) against your specific profile and uploaded resume. See exactly which skills match, which are missing, and read the AI's reasoning.
+- **Automated Company Research**: Uses Browserbase and Stagehand to autonomously browse a company's public web pages and generate a comprehensive dossier (culture, tech stack, interview prep) in real-time.
+- **Resume Extraction & Generation**: Upload your existing PDF resume and let AI auto-fill your profile, or generate a clean new professional PDF resume directly from your profile data.
+- **Analytics Dashboard**: Track your job hunt with real-time PostHog-powered analytics, visualising your matches, research activity, and overall progress over time.
 
-- **Framework**: Next.js 16 (Turbopack)
+## 🗺️ Core User Flow
+
+1. **Sign Up**: Quick login via Google or GitHub OAuth.
+2. **Profile Setup**: Fill out your profile or upload a resume for instant AI extraction.
+3. **Find Jobs**: Enter a title and location. JobPilot fetches jobs and AI scores them instantly.
+4. **Review Matches**: High-scoring jobs are visually highlighted. Click into any job to see the skill breakdown.
+5. **Research Company**: Click "Research Company" to trigger a live browser agent that builds a structured company dossier.
+6. **Apply**: Fully informed, click "Apply Now" to submit your application on the company's official site.
+
+## 🛠️ Tech Stack
+
+- **Framework**: Next.js 16 (App Router, Turbopack)
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS 4
-- **Backend**: InsForge (PostgreSQL, auth, storage, edge functions)
-- **AI**: GPT-4o via OpenRouter
-- **Job Data**: Adzuna API
-- **Company Research**: Browserbase + Stagehand
-- **Analytics**: PostHog
+- **Backend & Auth**: [InsForge](https://insforge.dev) (PostgreSQL, OAuth, Storage, Edge Functions)
+- **AI Engine**: GPT-4o via OpenRouter
+- **Job Data Engine**: Adzuna API
+- **Web Agents**: Browserbase + Stagehand
+- **Analytics**: PostHog (with HogQL for backend queries)
 
-## Getting Started
+## 🚀 Getting Started
 
-```bash
-npm run dev
-```
+### Prerequisites
+- Node.js (v18+)
+- An InsForge backend project (for Database, Auth, and Storage)
+- API Keys for OpenRouter, Adzuna, Browserbase, and PostHog.
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+### Installation
 
-## Environment Variables
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd job-pilot
+   ```
 
-See `.env.local` for required variables. Key ones:
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-- `NEXT_PUBLIC_INSFORGE_URL` — InsForge backend URL
-- `NEXT_PUBLIC_INSFORGE_ANON_KEY` — InsForge anon key
-- `OPENAI_API_KEY` — GPT-4o key
-- `ADZUNA_APP_ID` / `ADZUNA_APP_KEY` — Adzuna job search
-- `BROWSERBASE_API_KEY` / `BROWSERBASE_PROJECT_ID` — company research
-- `NEXT_PUBLIC_POSTHOG_KEY` / `NEXT_PUBLIC_POSTHOG_HOST` — analytics
+3. **Environment Setup**
+   Copy `.env.local.example` to `.env.local` and fill in the required values:
 
-## Core Flow
+   | Variable | Description |
+   |----------|-------------|
+   | `NEXT_PUBLIC_INSFORGE_URL` | Your InsForge backend API URL |
+   | `NEXT_PUBLIC_INSFORGE_ANON_KEY`| Your InsForge public anonymous key |
+   | `OPENROUTER_API_KEY` | For GPT-4o LLM capabilities |
+   | `ADZUNA_APP_ID` & `KEY` | Adzuna Job Search API credentials |
+   | `BROWSERBASE_API_KEY` & `ID`| Browserbase keys for live company research |
+   | `NEXT_PUBLIC_POSTHOG_KEY` | PostHog client key for event tracking |
+   | `POSTHOG_PERSONAL_API_KEY` | PostHog personal key for HogQL data fetching |
+   | `POSTHOG_PROJECT_ID` | Your PostHog project ID |
 
-1. Sign up via Google or GitHub OAuth
-2. Fill your profile and optionally upload a resume PDF
-3. Go to **Find Jobs**, enter a title and location
-4. GPT-4o scores each job 0–100 against your profile
-5. Click a job to see full details, matched/missing skills, and match reason
-6. Click **Research Company** to generate a company dossier via live browsing
-7. Click **Apply Now** to apply on the company's site
+4. **Run the Development Server**
+   ```bash
+   npm run dev
+   ```
+   Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## 📁 Project Structure
+
+| Route | Description |
+|-------|-------------|
+| `/` | Landing page |
+| `/login` | Authentication handling |
+| `/dashboard` | User stats, recent activity, and PostHog analytics charts |
+| `/find-jobs` | Job search interface, filtering, and AI scoring list |
+| `/find-jobs/[id]` | Deep dive into a job + AI company research dossier |
+| `/profile` | Profile management and resume handling |
+
+## 🤝 Contributing
+Contributions are welcome! Please adhere to the established project structure and code standards. Submit a PR for review.
