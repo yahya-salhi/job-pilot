@@ -1,23 +1,24 @@
 import { StatsCard } from "@/components/dashboard/StatsCard";
 
-const mockStats = [
-  { label: "Total Jobs Found", value: "24", trend: "+12%", trendUp: true },
-  { label: "Avg. Match Rate", value: "78%", trend: "+5%", trendUp: true },
-  { label: "Companies Researched", value: "12", trend: "+8%", trendUp: true },
-  { label: "Cover Letters Generated", value: "8", trend: "+2%", trendUp: true },
-];
+type Props = {
+  totalJobs: number;
+  avgMatchRate: number;
+  companiesResearched: number;
+  jobsThisWeek: number;
+};
 
-export function StatsBar() {
+export function StatsBar({ totalJobs, avgMatchRate, companiesResearched, jobsThisWeek }: Props) {
+  const stats = [
+    { label: "Total Jobs Found", value: String(totalJobs) },
+    { label: "Avg. Match Rate", value: `${avgMatchRate}%` },
+    { label: "Companies Researched", value: String(companiesResearched) },
+    { label: "Jobs This Week", value: String(jobsThisWeek) },
+  ];
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      {mockStats.map((stat) => (
-        <StatsCard
-          key={stat.label}
-          label={stat.label}
-          value={stat.value}
-          trend={stat.trend}
-          trendUp={stat.trendUp}
-        />
+      {stats.map((stat) => (
+        <StatsCard key={stat.label} label={stat.label} value={stat.value} />
       ))}
     </div>
   );

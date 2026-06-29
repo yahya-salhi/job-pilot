@@ -7,19 +7,45 @@ import { IncompleteProfileBanner } from "@/components/dashboard/IncompleteProfil
 
 export default async function DashboardPage() {
   let profileComplete = true;
+  let totalJobs = 0;
+  let avgMatchRate = 0;
+  let companiesResearched = 0;
+  let jobsThisWeek = 0;
 
   try {
     const insforge = await createInsforgeServer();
     const { data: authData } = await insforge.auth.getCurrentUser();
-    if (authData?.user) {
+    const userId = authData?.user?.id;
+
+    if (userId) {
       const { data: profile } = await insforge.database
         .from("profiles")
         .select("is_complete")
-        .eq("id", authData.user.id)
+        .eq("id", userId)
         .single();
       if (profile) {
         profileComplete = profile.is_complete ?? false;
       }
+
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 7);
+
+      const [countResult, avgResult, researchedResult, weekResult] = await Promise.all([
+        insforge.database.from("jobs").select("id", { count: "exact", head: true }).eq("user_id", userId),
+        insforge.database.from("jobs").select("match_score").eq("user_id", userId),
+        insforge.database.from("jobs").select("id", { count: "exact", head: true }).eq("user_id", userId).not("company_research", "is", null),
+        insforge.database.from("jobs").select("id", { count: "exact", head: true }).eq("user_id", userId).gte("found_at", weekAgo.toISOString()),
+      ]);
+
+      totalJobs = countResult.count ?? 0;
+
+      if (avgResult.data && avgResult.data.length > 0) {
+        const sum = avgResult.data.reduce((acc, row) => acc + (row.match_score ?? 0), 0);
+        avgMatchRate = Math.round(sum / avgResult.data.length);
+      }
+
+      companiesResearched = researchedResult.count ?? 0;
+      jobsThisWeek = weekResult.count ?? 0;
     }
   } catch (error) {
     console.error("[dashboard]", error);
@@ -33,7 +59,12 @@ export default async function DashboardPage() {
 
           {!profileComplete && <IncompleteProfileBanner />}
 
-          <StatsBar />
+          <StatsBar
+            totalJobs={totalJobs}
+            avgMatchRate={avgMatchRate}
+            companiesResearched={companiesResearched}
+            jobsThisWeek={jobsThisWeek}
+          />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <RecentActivity />
