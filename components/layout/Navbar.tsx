@@ -14,8 +14,7 @@ export function Navbar({ user }: { user: UserSchema | null }) {
             width={120}
             height={32}
             priority
-            className="object-contain h-8"
-            style={{ width: 'auto' }}
+            style={{ width: "auto", height: "auto" }}
           />
         </Link>
 
