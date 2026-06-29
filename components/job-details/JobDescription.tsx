@@ -11,7 +11,7 @@ function BulletList({ title, items }: { title: string; items: string[] }) {
   if (!items || items.length === 0) return null;
   return (
     <section>
-      <h2 className="text-base font-semibold text-text-primary mb-2">{title}</h2>
+      <h3 className="text-sm font-semibold text-text-primary mb-2">{title}</h3>
       <ul className="space-y-1.5">
         {items.map((item, i) => (
           <li key={i} className="text-sm text-text-secondary leading-relaxed pl-4 relative before:content-['•'] before:absolute before:left-0 before:text-text-muted">

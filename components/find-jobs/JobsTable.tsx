@@ -77,8 +77,11 @@ export function JobsTable({ jobs }: Props) {
           {jobs.map((job) => (
             <tr
               key={job.id}
-              className="border-t border-border-light cursor-pointer hover:bg-surface-secondary transition-colors"
+              tabIndex={0}
+              role="link"
+              className="border-t border-border-light cursor-pointer hover:bg-surface-secondary transition-colors focus:outline-none focus:ring-2 focus:ring-accent focus:ring-inset"
               onClick={() => router.push(`/find-jobs/${job.id}`)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); router.push(`/find-jobs/${job.id}`) } }}
             >
               <td className="py-3 pr-4">
                 <span className="text-sm font-medium text-text-primary">{job.company}</span>

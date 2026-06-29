@@ -32,7 +32,9 @@ export default function PostHogAuthHandler() {
           }
         }
       } catch (err) {
-        console.error("[PostHogAuthHandler] Auth hydration failed", err)
+        if (process.env.NODE_ENV !== 'production') {
+          console.error("[PostHogAuthHandler] Auth hydration failed", err)
+        }
       }
     }
 

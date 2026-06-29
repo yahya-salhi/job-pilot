@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Building2, Loader2, AlertCircle } from "lucide-react";
 import type { CompanyResearch as CompanyResearchType } from "@/types/job";
 
@@ -33,6 +34,7 @@ function BulletItems({ items }: { items: string[] }) {
 }
 
 export function CompanyResearch({ jobId, company, companyResearch }: Props) {
+  const router = useRouter();
   const [researching, setResearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -54,7 +56,7 @@ export function CompanyResearch({ jobId, company, companyResearch }: Props) {
         return;
       }
 
-      window.location.reload();
+      router.refresh();
     } catch {
       setError("Research failed. Please try again.");
     } finally {

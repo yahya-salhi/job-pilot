@@ -22,6 +22,7 @@ export default async function ProfilePage() {
   return (
     <div className="flex flex-col min-h-screen bg-surface">
       <main className="grow">
+        <h1 className="sr-only">Profile</h1>
         <ProfileClient initialProfile={initialProfile} />
       </main>
       <Footer />

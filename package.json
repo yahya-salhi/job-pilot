@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "audit": "npm audit --audit-level=moderate"
   },
   "dependencies": {
     "@insforge/sdk": "^1.3.1",

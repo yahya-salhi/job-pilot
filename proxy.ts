@@ -49,6 +49,7 @@ function buildCsp(nonce: string): string {
     form-action 'self';
     frame-ancestors 'none';
     upgrade-insecure-requests;
+    ${isDev ? "" : "require-trusted-types-for 'script'; trusted-types default;"}
   `;
   return csp.replace(/\s{2,}/g, " ").trim();
 }
@@ -66,6 +67,11 @@ export default async function proxy(request: NextRequest) {
   });
   response.headers.set("Content-Security-Policy", cspHeader);
   response.headers.set("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
+  response.headers.set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload");
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("X-Frame-Options", "DENY");
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.headers.set("Permissions-Policy", "geolocation=(), microphone=(), camera=()");
 
   const { accessToken } = await updateSession({
     baseUrl: process.env.NEXT_PUBLIC_INSFORGE_URL!,

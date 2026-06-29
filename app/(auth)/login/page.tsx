@@ -89,11 +89,11 @@ const LoginContent = () => {
           <div className="bg-surface-secondary px-8 py-4 border-t border-border-light">
             <p className="text-xs text-center text-text-secondary">
               By continuing, you agree to our{" "}
-              <a href="#" className="underline hover:text-text-primary">
+              <a href="/terms-and-conditions" className="underline hover:text-text-primary">
                 Terms of Service
               </a>{" "}
               and{" "}
-              <a href="#" className="underline hover:text-text-primary">
+              <a href="/privacy-policy" className="underline hover:text-text-primary">
                 Privacy Policy
               </a>
               .
