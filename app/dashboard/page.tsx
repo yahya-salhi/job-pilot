@@ -2,8 +2,13 @@ import { createInsforgeServer } from "@/lib/insforge-server";
 import { Footer } from "@/components/layout/Footer";
 import { StatsBar } from "@/components/dashboard/StatsBar";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
-import { Charts } from "@/components/dashboard/Charts";
+import { AnalyticsCharts } from "@/components/dashboard/AnalyticsCharts";
 import { IncompleteProfileBanner } from "@/components/dashboard/IncompleteProfileBanner";
+import {
+  getJobsFoundOverTime,
+  getMatchScoreDistribution,
+  getCompanyResearchActivity,
+} from "@/lib/posthog-query";
 
 function timeAgo(date: Date): string {
   const now = new Date();
@@ -36,6 +41,9 @@ export default async function DashboardPage() {
   let companiesResearched = 0;
   let jobsThisWeek = 0;
   let activityEntries: ActivityEntry[] = [];
+  let jobsFoundData: Awaited<ReturnType<typeof getJobsFoundOverTime>>["data"] = null;
+  let matchScoreData: Awaited<ReturnType<typeof getMatchScoreDistribution>>["data"] = null;
+  let companyResearchData: Awaited<ReturnType<typeof getCompanyResearchActivity>>["data"] = null;
 
   try {
     const insforge = await createInsforgeServer();
@@ -55,7 +63,7 @@ export default async function DashboardPage() {
       const weekAgo = new Date();
       weekAgo.setDate(weekAgo.getDate() - 7);
 
-      const [countResult, avgResult, researchedResult, weekResult, runsResult, researchJobsResult] = await Promise.all([
+      const [countResult, avgResult, researchedResult, weekResult, runsResult, researchJobsResult, jobsFound, matchScore, companyResearch] = await Promise.all([
         insforge.database.from("jobs").select("id", { count: "exact", head: true }).eq("user_id", userId),
         insforge.database.from("jobs").select("match_score").eq("user_id", userId),
         insforge.database.from("jobs").select("id", { count: "exact", head: true }).eq("user_id", userId).not("company_research", "is", null),
@@ -73,6 +81,9 @@ export default async function DashboardPage() {
           .not("company_research", "is", null)
           .order("found_at", { ascending: false })
           .limit(10),
+        getJobsFoundOverTime(userId),
+        getMatchScoreDistribution(userId),
+        getCompanyResearchActivity(userId),
       ]);
 
       totalJobs = countResult.count ?? 0;
@@ -111,6 +122,10 @@ export default async function DashboardPage() {
 
       activityEntries.sort((a, b) => b.sortKey.localeCompare(a.sortKey));
       activityEntries = activityEntries.slice(0, 8);
+
+      if (!jobsFound.error) jobsFoundData = jobsFound.data;
+      if (!matchScore.error) matchScoreData = matchScore.data;
+      if (!companyResearch.error) companyResearchData = companyResearch.data;
     }
   } catch (error) {
     console.error("[dashboard]", error);
@@ -131,36 +146,13 @@ export default async function DashboardPage() {
             jobsThisWeek={jobsThisWeek}
           />
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <RecentActivity entries={activityEntries} />
-            <div className="bg-surface border border-border rounded-2xl p-6 shadow-sm">
-              <h2 className="text-base font-semibold text-text-primary mb-4">Jobs Found Over Time</h2>
-              <svg width="100%" height={140} viewBox="0 0 300 140" preserveAspectRatio="none" className="overflow-visible">
-                <defs>
-                  <linearGradient id="jobsGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="var(--color-accent)" stopOpacity="0.2" />
-                    <stop offset="100%" stopColor="var(--color-accent)" stopOpacity="0" />
-                  </linearGradient>
-                </defs>
-                {[0, 0.25, 0.5, 0.75, 1].map((frac) => {
-                  const y = 10 + 100 - frac * 100;
-                  return (
-                    <line key={frac} x1={10} y1={y} x2={290} y2={y} stroke="var(--color-border)" strokeWidth="1" strokeDasharray="4 3" />
-                  );
-                })}
-                <path d="M15,90 L55,60 L95,75 L135,30 L175,55 L215,95 L255,40 Z" fill="url(#jobsGradient)" />
-                <path d="M15,90 L55,60 L95,75 L135,30 L175,55 L215,95 L255,40" fill="none" stroke="var(--color-accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                {[[15,90],[55,60],[95,75],[135,30],[175,55],[215,95],[255,40]].map(([x, y], i) => (
-                  <circle key={i} cx={x} cy={y} r="3" fill="var(--color-accent)" stroke="white" strokeWidth="2" />
-                ))}
-                {["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map((d, i) => (
-                  <text key={i} x={15 + i * 40} y={130} textAnchor="middle" fill="#9CA3AF" fontSize="10">{d}</text>
-                ))}
-              </svg>
-            </div>
-          </div>
+          <RecentActivity entries={activityEntries} />
 
-          <Charts />
+          <AnalyticsCharts
+            jobsFoundData={jobsFoundData ?? []}
+            matchScoreData={matchScoreData ?? []}
+            companyResearchData={companyResearchData ?? []}
+          />
         </div>
       </main>
       <Footer />
