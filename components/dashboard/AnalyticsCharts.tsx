@@ -12,7 +12,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import type { DayCount, MatchScoreRange } from "@/lib/posthog-query";
+import type { DayCount, MatchScoreRange } from "@/types/analytics-service";
 
 type Props = {
   jobsFoundData: DayCount[];

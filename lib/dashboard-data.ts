@@ -1,9 +1,5 @@
 import { timeAgo } from "@/lib/utils";
-import {
-  getJobsFoundOverTime,
-  getMatchScoreDistribution,
-  getCompanyResearchActivity,
-} from "@/lib/posthog-query";
+import type { IAnalyticsService } from "@/types/analytics-service";
 import {
   getJobCount,
   getMatchScores,
@@ -29,14 +25,15 @@ export type DashboardData = {
   companiesResearched: number;
   jobsThisWeek: number;
   activityEntries: ActivityEntry[];
-  jobsFoundData: Awaited<ReturnType<typeof getJobsFoundOverTime>>["data"];
-  matchScoreData: Awaited<ReturnType<typeof getMatchScoreDistribution>>["data"];
-  companyResearchData: Awaited<ReturnType<typeof getCompanyResearchActivity>>["data"];
+  jobsFoundData: import("@/types/analytics-service").DayCount[] | null;
+  matchScoreData: import("@/types/analytics-service").MatchScoreRange[] | null;
+  companyResearchData: import("@/types/analytics-service").DayCount[] | null;
 };
 
 export async function loadDashboardData(
   userId: string,
   insforge: InsforgeClient,
+  analytics: IAnalyticsService,
 ): Promise<DashboardData> {
   const weekAgo = new Date();
   weekAgo.setDate(weekAgo.getDate() - 7);
@@ -49,9 +46,9 @@ export async function loadDashboardData(
     getJobsThisWeekCount(insforge, userId, weekAgo.toISOString()),
     getRecentAgentRuns(insforge, userId),
     getRecentResearchJobs(insforge, userId),
-    getJobsFoundOverTime(userId),
-    getMatchScoreDistribution(userId),
-    getCompanyResearchActivity(userId),
+    analytics.getJobsFoundOverTime(userId),
+    analytics.getMatchScoreDistribution(userId),
+    analytics.getCompanyResearchActivity(userId),
   ]);
 
   const activityEntries: ActivityEntry[] = [];

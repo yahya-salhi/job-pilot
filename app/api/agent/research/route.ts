@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/with-auth";
 import { researchCompany } from "@/agent/research";
+import { createLLMProvider } from "@/lib/llm";
+import { createAnalyticsService } from "@/lib/analytics";
 
 export const runtime = "nodejs";
 
@@ -16,7 +18,9 @@ export async function POST(request: Request) {
       );
     }
 
-    const result = await researchCompany(insforge, user.id, jobId.trim());
+    const llm = createLLMProvider();
+    const analytics = createAnalyticsService();
+    const result = await researchCompany(llm, analytics, insforge, user.id, jobId.trim());
 
     if (!result.success) {
       return NextResponse.json(

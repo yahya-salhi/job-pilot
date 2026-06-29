@@ -1,5 +1,6 @@
 import { requireAuthenticatedPage } from "@/lib/require-user";
 import { loadDashboardData, type DashboardData } from "@/lib/dashboard-data";
+import { createAnalyticsService } from "@/lib/analytics";
 import { Footer } from "@/components/layout/Footer";
 import { StatsBar } from "@/components/dashboard/StatsBar";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
@@ -12,7 +13,8 @@ export default async function DashboardPage() {
   let data: DashboardData;
 
   try {
-    data = await loadDashboardData(user.id, insforge);
+    const analytics = createAnalyticsService();
+    data = await loadDashboardData(user.id, insforge, analytics);
   } catch (error) {
     console.error("[dashboard]", error);
     data = {

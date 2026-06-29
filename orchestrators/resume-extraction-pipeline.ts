@@ -1,5 +1,5 @@
 import "@/lib/pdf-parse-setup";
-import { extractJson, getResumeExtractModel } from "@/lib/openrouter";
+import type { ILLMProvider } from "@/types/llm-provider";
 import {
   buildResumeExtractionPrompt,
   extractTextFromPdf,
@@ -15,6 +15,7 @@ export type ExtractResult =
   | { success: false; error: string; status: number };
 
 export async function extractResumePipeline(
+  llm: ILLMProvider,
   insforge: InsforgeClient,
   userId: string,
 ): Promise<ExtractResult> {
@@ -41,11 +42,11 @@ export async function extractResumePipeline(
     };
   }
 
-  const result = await extractJson(
+  const result = await llm.extractJson(
     "You extract structured resume data. Return only valid JSON with no markdown.",
     buildResumeExtractionPrompt(resumeText),
     parseExtractedProfile,
-    { model: getResumeExtractModel(), temperature: 0.3, maxTokens: 800 },
+    { capability: "resume-extract", temperature: 0.3, maxTokens: 800 },
   );
 
   if (!result.success) {

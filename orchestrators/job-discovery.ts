@@ -1,13 +1,16 @@
 import { searchJobs, mapAdzunaJobToScored } from "@/services/adzuna";
 import { MATCH_THRESHOLD } from "@/constants/job-scoring";
 import { scoreJob } from "@/agent/matcher";
-import { fireEvents } from "@/lib/fire-events";
+import type { ILLMProvider } from "@/types/llm-provider";
+import type { IAnalyticsService } from "@/types/analytics-service";
 import { saveJob } from "@/data/jobs-repo";
 import { createAgentRun, completeAgentRun } from "@/data/agent-runs-repo";
 import { getProfileSkills } from "@/data/profiles-repo";
 import type { InsforgeClient, AgentFindResult } from "@/agent/types";
 
 export async function runJobDiscovery(
+  llm: ILLMProvider,
+  analytics: IAnalyticsService,
   insforge: InsforgeClient,
   userId: string,
   jobTitle: string,
@@ -16,9 +19,7 @@ export async function runJobDiscovery(
   try {
     const runId = await createAgentRun(insforge, userId, jobTitle, location);
 
-    await fireEvents(userId, [
-      { event: "job_search_started", properties: { userId, jobTitle, location } },
-    ]);
+    await analytics.capture(userId, "job_search_started", { userId, jobTitle, location });
 
     const adzunaJobs = await searchJobs(jobTitle, location);
 
@@ -39,6 +40,7 @@ export async function runJobDiscovery(
 
     for (const adzunaJob of adzunaJobs) {
       const score = await scoreJob(
+        llm,
         adzunaJob.title,
         adzunaJob.company.display_name,
         adzunaJob.description,
@@ -60,9 +62,7 @@ export async function runJobDiscovery(
       await saveJob(insforge, runId, userId, scored);
       savedCount++;
 
-      await fireEvents(userId, [
-        { event: "job_found", properties: { userId, source: "search", matchScore: score.matchScore } },
-      ]);
+      await analytics.capture(userId, "job_found", { userId, source: "search", matchScore: score.matchScore });
     }
 
     await completeAgentRun(insforge, runId, savedCount);
@@ -76,9 +76,7 @@ export async function runJobDiscovery(
   } catch (error) {
     console.error("[orchestrators/job-discovery] Discovery failed:", error);
 
-    await fireEvents(userId, [
-      { event: "job_search_error", properties: { userId, jobTitle, location, error: String(error) } },
-    ]);
+    await analytics.capture(userId, "job_search_error", { userId, jobTitle, location, error: String(error) });
 
     return {
       success: false,

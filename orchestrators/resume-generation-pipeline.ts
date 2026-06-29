@@ -1,4 +1,4 @@
-import { extractJson, getResumeGenerateModel } from "@/lib/openrouter";
+import type { ILLMProvider } from "@/types/llm-provider";
 import {
   renderResumePdf,
   type ResumeContent,
@@ -80,6 +80,7 @@ Portfolio: ${profile.portfolio_url || "Not provided"}`;
 }
 
 export async function generateResumePipeline(
+  llm: ILLMProvider,
   insforge: InsforgeClient,
   userId: string,
 ): Promise<GenerateResult> {
@@ -97,14 +98,14 @@ export async function generateResumePipeline(
     };
   }
 
-  const llmResult = await extractJson(
+  const llmResult = await llm.extractJson(
     buildSystemPrompt(),
     buildUserPrompt(profile),
     (raw) => {
       if (!raw || typeof raw !== "object") return null;
       return raw as ResumeContent;
     },
-    { model: getResumeGenerateModel(), temperature: 0.7, maxTokens: 1000 },
+    { capability: "resume-generate", temperature: 0.7, maxTokens: 1000 },
   );
 
   if (!llmResult.success) {

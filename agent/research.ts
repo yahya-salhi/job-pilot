@@ -1,6 +1,6 @@
-import { extractJson, getResearchModel } from "@/lib/openrouter";
+import type { ILLMProvider } from "@/types/llm-provider";
+import type { IAnalyticsService } from "@/types/analytics-service";
 import { stripHtml } from "@/lib/utils";
-import { fireEvents } from "@/lib/fire-events";
 import { getJobForResearch, updateCompanyResearch } from "@/data/jobs-repo";
 import { getProfileForResearch } from "@/data/profiles-repo";
 import type { CompanyResearch } from "@/types/job";
@@ -82,6 +82,7 @@ type WebsiteResearch = {
 };
 
 async function researchWebsite(
+  llm: ILLMProvider,
   homepageUrl: string,
 ): Promise<WebsiteExtraction | null> {
   try {
@@ -97,7 +98,7 @@ async function researchWebsite(
 
     if (text.length < 50) return null;
 
-    const result = await extractJson(
+    const result = await llm.extractJson(
       `You are a company research assistant. Extract structured information from the text of a company's homepage.
 
 Return ONLY valid JSON matching this shape:
@@ -116,7 +117,7 @@ Return ONLY valid JSON matching this shape:
           signals: Array.isArray(d.signals) ? d.signals as string[] : [],
         } satisfies WebsiteExtraction;
       },
-      { model: getResearchModel(), temperature: 0.3 },
+      { capability: "research", temperature: 0.3 },
     );
 
     if (!result.success) return null;
@@ -127,6 +128,7 @@ Return ONLY valid JSON matching this shape:
 }
 
 async function synthesiseDossier(
+  llm: ILLMProvider,
   job: {
     title: string;
     company: string;
@@ -181,7 +183,7 @@ Experience: ${profile.years_experience} years, level ${profile.experience_level}
 Skills: ${profile.skills.join(", ")}
 Work history: ${JSON.stringify(profile.work_experience)}`;
 
-  const result = await extractJson(systemPrompt, userPrompt, (raw) => {
+  const result = await llm.extractJson(systemPrompt, userPrompt, (raw) => {
     if (!raw || typeof raw !== "object") return null;
     const d = raw as Record<string, unknown>;
     return {
@@ -196,7 +198,7 @@ Work history: ${JSON.stringify(profile.work_experience)}`;
       sources: Array.isArray(d.sources) ? d.sources as string[] : [],
     };
   }, {
-    model: getResearchModel(),
+    capability: "research",
     temperature: 0.4,
   });
 
@@ -208,6 +210,8 @@ Work history: ${JSON.stringify(profile.work_experience)}`;
 }
 
 export async function researchCompany(
+  llm: ILLMProvider,
+  analytics: IAnalyticsService,
   insforge: InsforgeClient,
   userId: string,
   jobId: string,
@@ -217,7 +221,7 @@ export async function researchCompany(
     const profile = await getProfileForResearch(insforge, userId);
     const homepageUrl = await resolveHomepageUrl(job.company, job.redirect_url);
 
-    const extraction = await researchWebsite(homepageUrl);
+    const extraction = await researchWebsite(llm, homepageUrl);
 
     const companyResearch: Partial<WebsiteResearch> = extraction
       ? {
@@ -229,6 +233,7 @@ export async function researchCompany(
       : {};
 
     const dossier = await synthesiseDossier(
+      llm,
       { title: job.title, company: job.company, description: job.description, matched_skills: job.matched_skills, missing_skills: job.missing_skills },
       { current_title: profile.current_title, years_experience: profile.years_experience, experience_level: profile.experience_level, skills: profile.skills, work_experience: profile.work_experience },
       companyResearch,
@@ -236,9 +241,7 @@ export async function researchCompany(
 
     await updateCompanyResearch(insforge, jobId, userId, dossier);
 
-    await fireEvents(userId, [
-      { event: "company_researched", properties: { userId, jobId, company: job.company } },
-    ]);
+    await analytics.capture(userId, "company_researched", { userId, jobId, company: job.company });
 
     return { success: true, dossier };
   } catch (error) {

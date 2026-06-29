@@ -1,7 +1,8 @@
-import { extractJson } from "@/lib/openrouter";
+import type { ILLMProvider } from "@/types/llm-provider";
 import type { JobScoreResult } from "./types";
 
 export async function scoreJob(
+  llm: ILLMProvider,
   jobTitle: string,
   company: string,
   description: string,
@@ -37,7 +38,7 @@ CANDIDATE:
 Skills: ${skillsList}
 Profile: ${profileSummary || "No profile details available"}`;
 
-  const llm = await extractJson(systemPrompt, userPrompt, (raw) => {
+  const result = await llm.extractJson(systemPrompt, userPrompt, (raw) => {
     if (!raw || typeof raw !== "object") return null;
     const data = raw as Record<string, unknown>;
     return {
@@ -48,13 +49,13 @@ Profile: ${profileSummary || "No profile details available"}`;
     } satisfies JobScoreResult;
   }, { temperature: 0.3, maxTokens: 300 });
 
-  if (!llm.success) {
+  if (!result.success) {
     return {
       matchScore: 0,
-      matchReason: `Failed to score this job: ${llm.error}`,
+      matchReason: `Failed to score this job: ${result.error}`,
       matchedSkills: [],
       missingSkills: [],
     };
   }
-  return llm.data;
+  return result.data;
 }

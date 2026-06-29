@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/with-auth";
 import { runJobDiscovery } from "@/orchestrators/job-discovery";
+import { createLLMProvider } from "@/lib/llm";
+import { createAnalyticsService } from "@/lib/analytics";
 
 export const runtime = "nodejs";
 
@@ -17,7 +19,11 @@ export async function POST(request: Request) {
       );
     }
 
+    const llm = createLLMProvider();
+    const analytics = createAnalyticsService();
     const result = await runJobDiscovery(
+      llm,
+      analytics,
       insforge,
       user.id,
       jobTitle.trim(),

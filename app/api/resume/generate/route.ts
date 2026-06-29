@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/with-auth";
 import { generateResumePipeline } from "@/orchestrators/resume-generation-pipeline";
+import { createLLMProvider } from "@/lib/llm";
 
 export const runtime = "nodejs";
 
 export async function POST() {
   return withAuth(async ({ user, insforge }) => {
-    const result = await generateResumePipeline(insforge, user.id);
+    const llm = createLLMProvider();
+    const result = await generateResumePipeline(llm, insforge, user.id);
 
     if (!result.success) {
       return NextResponse.json(
