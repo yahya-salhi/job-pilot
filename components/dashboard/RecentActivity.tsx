@@ -1,48 +1,22 @@
 type ActivityEntry = {
-  type: "resume_tailored" | "cover_letter" | "job_found";
+  type: "agent_run" | "company_research";
   description: string;
   timestamp: string;
 };
 
-const mockActivity: ActivityEntry[] = [
-  {
-    type: "job_found",
-    description: "Found 8 new job matches for Frontend Engineer",
-    timestamp: "2 hours ago",
-  },
-  {
-    type: "cover_letter",
-    description: "Cover letter generated for Senior Frontend role at Stripe",
-    timestamp: "5 hours ago",
-  },
-  {
-    type: "resume_tailored",
-    description: "Resume tailored for Frontend Engineer at Vercel",
-    timestamp: "Yesterday",
-  },
-  {
-    type: "job_found",
-    description: "Found 5 new job matches for Full Stack Developer",
-    timestamp: "Yesterday",
-  },
-  {
-    type: "cover_letter",
-    description: "Cover letter generated for Product Designer role at Figma",
-    timestamp: "2 days ago",
-  },
-];
+type Props = {
+  entries: ActivityEntry[];
+};
 
 function ActivityDot({ type }: { type: ActivityEntry["type"] }) {
   const ringMap = {
-    resume_tailored: "bg-accent-light",
-    cover_letter: "bg-info-light",
-    job_found: "bg-success-light",
+    agent_run: "bg-info-light",
+    company_research: "bg-success-light",
   };
 
   const dotMap = {
-    resume_tailored: "bg-accent",
-    cover_letter: "bg-info",
-    job_found: "bg-success-alt",
+    agent_run: "bg-info",
+    company_research: "bg-success-alt",
   };
 
   return (
@@ -53,26 +27,32 @@ function ActivityDot({ type }: { type: ActivityEntry["type"] }) {
   );
 }
 
-export function RecentActivity() {
+export function RecentActivity({ entries }: Props) {
   return (
     <div className="bg-surface border border-border rounded-2xl p-6 shadow-sm">
       <h2 className="text-base font-semibold text-text-primary mb-5">Recent Activity</h2>
-      <div className="space-y-0">
-        {mockActivity.map((entry, i) => (
-          <div
-            key={i}
-            className="flex items-start gap-3 py-3 border-t border-border-light first:border-t-0"
-          >
-            <div className="mt-0.5">
-              <ActivityDot type={entry.type} />
+      {entries.length === 0 ? (
+        <p className="text-sm text-text-secondary text-center py-8">
+          No recent activity yet. Start by finding jobs or researching companies.
+        </p>
+      ) : (
+        <div className="space-y-0">
+          {entries.map((entry, i) => (
+            <div
+              key={i}
+              className="flex items-start gap-3 py-3 border-t border-border-light first:border-t-0"
+            >
+              <div className="mt-0.5">
+                <ActivityDot type={entry.type} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-text-primary leading-5">{entry.description}</p>
+                <p className="text-xs text-text-muted mt-0.5">{entry.timestamp}</p>
+              </div>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm text-text-primary leading-5">{entry.description}</p>
-              <p className="text-xs text-text-muted mt-0.5">{entry.timestamp}</p>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
