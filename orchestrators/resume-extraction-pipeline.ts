@@ -1,5 +1,5 @@
 import "@/lib/pdf-parse-setup";
-import { callLLM, getResumeExtractModel, safeParseJson } from "@/lib/openrouter";
+import { extractJson, getResumeExtractModel } from "@/lib/openrouter";
 import {
   buildResumeExtractionPrompt,
   extractTextFromPdf,
@@ -41,9 +41,10 @@ export async function extractResumePipeline(
     };
   }
 
-  const result = await callLLM(
+  const result = await extractJson(
     "You extract structured resume data. Return only valid JSON with no markdown.",
     buildResumeExtractionPrompt(resumeText),
+    parseExtractedProfile,
     { model: getResumeExtractModel(), temperature: 0.3, maxTokens: 800 },
   );
 
@@ -55,24 +56,5 @@ export async function extractResumePipeline(
     };
   }
 
-  const parsed = safeParseJson(result.content, null);
-  if (!parsed) {
-    return {
-      success: false,
-      error: "AI extraction returned invalid data. Please try again.",
-      status: 502,
-    };
-  }
-
-  const profilePatch = parseExtractedProfile(parsed);
-  if (!profilePatch) {
-    return {
-      success: false,
-      error:
-        "Could not map resume content to profile fields. Try a different PDF.",
-      status: 422,
-    };
-  }
-
-  return { success: true, profilePatch };
+  return { success: true, profilePatch: result.data };
 }

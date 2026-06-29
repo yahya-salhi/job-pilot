@@ -1,20 +1,14 @@
-import { callLLM, getResearchModel, safeParseJson } from "@/lib/openrouter";
+import { extractJson, getResearchModel } from "@/lib/openrouter";
+import { stripHtml } from "@/lib/utils";
+import { fireEvents } from "@/lib/fire-events";
+import { getJobForResearch, updateCompanyResearch } from "@/data/jobs-repo";
+import { getProfileForResearch } from "@/data/profiles-repo";
 import type { CompanyResearch } from "@/types/job";
-import type { InsforgeClient, AnalyticsEvent } from "./types";
+import type { InsforgeClient } from "./types";
 
 export type ResearchResult =
-  | { success: true; dossier: CompanyResearch; events: AnalyticsEvent[] }
-  | { success: false; error: string; events: AnalyticsEvent[] };
-
-function stripHtml(html: string): string {
-  return html
-    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
-    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
-    .replace(/<[^>]+>/g, " ")
-    .replace(/&[^;]+;/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
+  | { success: true; dossier: CompanyResearch }
+  | { success: false; error: string };
 
 async function followRedirect(url: string): Promise<string | null> {
   try {
@@ -103,7 +97,7 @@ async function researchWebsite(
 
     if (text.length < 50) return null;
 
-    const result = await callLLM(
+    const result = await extractJson(
       `You are a company research assistant. Extract structured information from the text of a company's homepage.
 
 Return ONLY valid JSON matching this shape:
@@ -113,19 +107,20 @@ Return ONLY valid JSON matching this shape:
   "signals": ["string array — funding, notable customers, scale, mission, recent launches"]
 }`,
       `HOMEPAGE TEXT:\n${text.slice(0, 6000)}`,
+      (raw) => {
+        if (!raw || typeof raw !== "object") return null;
+        const d = raw as Record<string, unknown>;
+        return {
+          companyOverview: (d.companyOverview as string) || "",
+          techMentions: Array.isArray(d.techMentions) ? d.techMentions as string[] : [],
+          signals: Array.isArray(d.signals) ? d.signals as string[] : [],
+        } satisfies WebsiteExtraction;
+      },
       { model: getResearchModel(), temperature: 0.3 },
     );
 
     if (!result.success) return null;
-
-    const parsed = safeParseJson(result.content, null as WebsiteExtraction | null);
-    if (!parsed) return null;
-
-    return {
-      companyOverview: parsed.companyOverview || "",
-      techMentions: Array.isArray(parsed.techMentions) ? parsed.techMentions : [],
-      signals: Array.isArray(parsed.signals) ? parsed.signals : [],
-    };
+    return result.data;
   } catch {
     return null;
   }
@@ -186,7 +181,21 @@ Experience: ${profile.years_experience} years, level ${profile.experience_level}
 Skills: ${profile.skills.join(", ")}
 Work history: ${JSON.stringify(profile.work_experience)}`;
 
-  const result = await callLLM(systemPrompt, userPrompt, {
+  const result = await extractJson(systemPrompt, userPrompt, (raw) => {
+    if (!raw || typeof raw !== "object") return null;
+    const d = raw as Record<string, unknown>;
+    return {
+      companyOverview: (d.companyOverview as string) || "",
+      techStack: Array.isArray(d.techStack) ? d.techStack as string[] : [],
+      culture: Array.isArray(d.culture) ? d.culture as string[] : [],
+      whyThisRole: (d.whyThisRole as string) || "",
+      yourEdge: Array.isArray(d.yourEdge) ? d.yourEdge as string[] : [],
+      gapsToAddress: Array.isArray(d.gapsToAddress) ? d.gapsToAddress as string[] : [],
+      smartQuestions: Array.isArray(d.smartQuestions) ? d.smartQuestions as string[] : [],
+      interviewPrep: Array.isArray(d.interviewPrep) ? d.interviewPrep as string[] : [],
+      sources: Array.isArray(d.sources) ? d.sources as string[] : [],
+    };
+  }, {
     model: getResearchModel(),
     temperature: 0.4,
   });
@@ -195,83 +204,7 @@ Work history: ${JSON.stringify(profile.work_experience)}`;
     throw new Error(result.error);
   }
 
-  const parsed = safeParseJson(result.content, null as CompanyResearch | null);
-  if (!parsed) {
-    throw new Error("Failed to parse research synthesis response.");
-  }
-
-  return {
-    companyOverview: parsed.companyOverview || "",
-    techStack: Array.isArray(parsed.techStack) ? parsed.techStack : [],
-    culture: Array.isArray(parsed.culture) ? parsed.culture : [],
-    whyThisRole: parsed.whyThisRole || "",
-    yourEdge: Array.isArray(parsed.yourEdge) ? parsed.yourEdge : [],
-    gapsToAddress: Array.isArray(parsed.gapsToAddress) ? parsed.gapsToAddress : [],
-    smartQuestions: Array.isArray(parsed.smartQuestions) ? parsed.smartQuestions : [],
-    interviewPrep: Array.isArray(parsed.interviewPrep) ? parsed.interviewPrep : [],
-    sources: Array.isArray(parsed.sources) ? parsed.sources : [],
-  };
-}
-
-async function loadJobAndProfile(
-  insforge: InsforgeClient,
-  userId: string,
-  jobId: string,
-): Promise<{
-  job: {
-    title: string;
-    company: string;
-    description: string;
-    matched_skills: string[];
-    missing_skills: string[];
-    redirect_url: string;
-  };
-  profile: {
-    current_title: string;
-    years_experience: number | null;
-    experience_level: string;
-    skills: string[];
-    work_experience: unknown;
-  };
-}> {
-  const { data: job, error: jobError } = await insforge.database
-    .from("jobs")
-    .select("title, company, about_role, matched_skills, missing_skills, source_url")
-    .eq("id", jobId)
-    .eq("user_id", userId)
-    .single();
-
-  if (jobError || !job) {
-    throw new Error("Job not found.");
-  }
-
-  const { data: profile, error: profileError } = await insforge.database
-    .from("profiles")
-    .select("current_title, years_experience, experience_level, skills, work_experience")
-    .eq("id", userId)
-    .single();
-
-  if (profileError || !profile) {
-    throw new Error("Profile not found.");
-  }
-
-  return {
-    job: {
-      title: job.title,
-      company: job.company,
-      description: job.about_role || "",
-      matched_skills: Array.isArray(job.matched_skills) ? job.matched_skills : [],
-      missing_skills: Array.isArray(job.missing_skills) ? job.missing_skills : [],
-      redirect_url: job.source_url || "",
-    },
-    profile: {
-      current_title: profile.current_title || "",
-      years_experience: profile.years_experience,
-      experience_level: profile.experience_level || "mid",
-      skills: Array.isArray(profile.skills) ? profile.skills : [],
-      work_experience: profile.work_experience,
-    },
-  };
+  return result.data;
 }
 
 export async function researchCompany(
@@ -280,7 +213,8 @@ export async function researchCompany(
   jobId: string,
 ): Promise<ResearchResult> {
   try {
-    const { job, profile } = await loadJobAndProfile(insforge, userId, jobId);
+    const job = await getJobForResearch(insforge, jobId, userId);
+    const profile = await getProfileForResearch(insforge, userId);
     const homepageUrl = await resolveHomepageUrl(job.company, job.redirect_url);
 
     const extraction = await researchWebsite(homepageUrl);
@@ -294,34 +228,24 @@ export async function researchCompany(
         }
       : {};
 
-    const dossier = await synthesiseDossier(job, profile, companyResearch);
+    const dossier = await synthesiseDossier(
+      { title: job.title, company: job.company, description: job.description, matched_skills: job.matched_skills, missing_skills: job.missing_skills },
+      { current_title: profile.current_title, years_experience: profile.years_experience, experience_level: profile.experience_level, skills: profile.skills, work_experience: profile.work_experience },
+      companyResearch,
+    );
 
-    const { error: updateError } = await insforge.database
-      .from("jobs")
-      .update({ company_research: dossier })
-      .eq("id", jobId)
-      .eq("user_id", userId);
+    await updateCompanyResearch(insforge, jobId, userId, dossier);
 
-    if (updateError) {
-      console.error("[agent/research] Failed to save dossier:", updateError);
-    }
+    await fireEvents(userId, [
+      { event: "company_researched", properties: { userId, jobId, company: job.company } },
+    ]);
 
-    return {
-      success: true,
-      dossier,
-      events: [
-        {
-          event: "company_researched",
-          properties: { userId, jobId, company: job.company },
-        },
-      ],
-    };
+    return { success: true, dossier };
   } catch (error) {
     console.error("[agent/research]", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Research failed.",
-      events: [],
     };
   }
 }

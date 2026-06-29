@@ -1,6 +1,7 @@
 import "@/lib/pdf-parse-setup";
 import { PDFParse } from "pdf-parse";
 import type { Education, WorkExperience } from "@/types";
+import { asNonEmptyString, asEnum, asStringArray } from "@/lib/utils";
 import type { ExtractedProfilePatch } from "@/mappers/merge-profile-extraction";
 import {
   EXPERIENCE_LEVELS,
@@ -143,26 +144,6 @@ Rules:
 
 RESUME TEXT:
 ${resumeText}`;
-}
-
-function asNonEmptyString(value: unknown): string | null {
-  if (typeof value !== "string") return null;
-  const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : null;
-}
-
-function asEnum<T extends string>(value: unknown, allowed: readonly T[]): T | null {
-  if (typeof value !== "string") return null;
-  const trimmed = value.trim();
-  return (allowed as readonly string[]).includes(trimmed) ? (trimmed as T) : null;
-}
-
-function asStringArray(value: unknown): string[] {
-  if (!Array.isArray(value)) return [];
-  return value
-    .filter((item): item is string => typeof item === "string")
-    .map((item) => item.trim())
-    .filter(Boolean);
 }
 
 function asWorkExperienceArray(value: unknown): WorkExperience[] {

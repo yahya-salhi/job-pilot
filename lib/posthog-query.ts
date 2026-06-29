@@ -1,3 +1,9 @@
+function safeHogQLString(value: string): string {
+  return value.replace(/'/g, "\\'");
+}
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 type QueryResult<T> = { data: T[] | null; error: string | null };
 
 function getClient() {
@@ -13,6 +19,12 @@ function getClient() {
   }
 
   return { apiKey, projectId, host };
+}
+
+function assertUserId(userId: string): void {
+  if (!UUID_RE.test(userId)) {
+    throw new Error(`Invalid userId format: ${userId}`);
+  }
 }
 
 async function runHogQL(query: string): Promise<QueryResult<Record<string, unknown>>> {
@@ -64,11 +76,12 @@ export async function getJobsFoundOverTime(
   userId: string,
   days = 30,
 ): Promise<QueryResult<DayCount>> {
+  assertUserId(userId);
   const result = await runHogQL(`
     SELECT toStartOfDay(timestamp) AS day, count() AS count
     FROM events
     WHERE event = 'job_found'
-      AND distinct_id = '${userId}'
+      AND distinct_id = '${safeHogQLString(userId)}'
       AND timestamp >= now() - INTERVAL ${days} DAY
     GROUP BY day
     ORDER BY day ASC
@@ -87,6 +100,7 @@ export type MatchScoreRange = { range: string; count: number };
 export async function getMatchScoreDistribution(
   userId: string,
 ): Promise<QueryResult<MatchScoreRange>> {
+  assertUserId(userId);
   const result = await runHogQL(`
     SELECT
       multiIf(
@@ -99,7 +113,7 @@ export async function getMatchScoreDistribution(
       count() AS count
     FROM events
     WHERE event = 'job_found'
-      AND distinct_id = '${userId}'
+      AND distinct_id = '${safeHogQLString(userId)}'
     GROUP BY range
     ORDER BY range ASC
   `);
@@ -116,11 +130,12 @@ export async function getCompanyResearchActivity(
   userId: string,
   days = 7,
 ): Promise<QueryResult<DayCount>> {
+  assertUserId(userId);
   const result = await runHogQL(`
     SELECT toStartOfDay(timestamp) AS day, count() AS count
     FROM events
     WHERE event = 'company_researched'
-      AND distinct_id = '${userId}'
+      AND distinct_id = '${safeHogQLString(userId)}'
       AND timestamp >= now() - INTERVAL ${days} DAY
     GROUP BY day
     ORDER BY day ASC

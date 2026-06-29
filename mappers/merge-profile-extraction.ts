@@ -1,3 +1,4 @@
+import { arraysEqual } from "@/lib/utils";
 import type { Education, ProfileFormData, WorkExperience } from "@/types";
 
 export type ExtractedProfilePatch = Partial<
@@ -84,15 +85,22 @@ function shouldApplyString(current: string, initial: string): boolean {
   return current.trim() === "" || current === initial;
 }
 
-function arraysEqual(a: string[], b: string[]): boolean {
-  return a.length === b.length && a.every((value, index) => value === b[index]);
-}
-
 function workExperienceEqual(
   a: WorkExperience[],
   b: WorkExperience[],
 ): boolean {
-  return JSON.stringify(a) === JSON.stringify(b);
+  if (a.length !== b.length) return false;
+  return a.every((entry, i) => {
+    const other = b[i];
+    return (
+      entry.company === other.company &&
+      entry.title === other.title &&
+      entry.startDate === other.startDate &&
+      entry.endDate === other.endDate &&
+      entry.currentlyWorking === other.currentlyWorking &&
+      entry.responsibilities === other.responsibilities
+    );
+  });
 }
 
 function mergeEducation(

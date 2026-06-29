@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/with-auth";
-import { fireEvents } from "@/lib/fire-events";
 import { runJobDiscovery } from "@/orchestrators/job-discovery";
 
 export const runtime = "nodejs";
@@ -24,8 +23,6 @@ export async function POST(request: Request) {
       jobTitle.trim(),
       location.trim(),
     );
-
-    await fireEvents(user.id, result.events);
 
     if (!result.success) {
       return NextResponse.json(

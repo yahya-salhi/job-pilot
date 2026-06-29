@@ -1,24 +1,22 @@
-import { redirect } from "next/navigation";
-import { requireUser, AuthError } from "@/lib/require-user";
+import { requireAuthenticatedPage } from "@/lib/require-user";
 import { Footer } from "@/components/layout/Footer";
 import { ProfileClient } from "@/components/profile/ProfileClient";
-import { dbToForm } from "@/mappers/profile-mapper";
+import { dbToForm, type ProfileDbRow } from "@/mappers/profile-mapper";
+import type { InsforgeClient } from "@/agent/types";
 
-export default async function ProfilePage() {
-  let user: any, insforge: any;
-  try {
-    ({ user, insforge } = await requireUser());
-  } catch (error) {
-    if (error instanceof AuthError) redirect("/login");
-    throw error;
-  }
-
-  const { data: profile } = await insforge.database
+async function getProfile(insforge: InsforgeClient, userId: string): Promise<ProfileDbRow | null> {
+  const { data } = await insforge.database
     .from("profiles")
     .select("*")
-    .eq("id", user.id)
+    .eq("id", userId)
     .single();
+  return data as ProfileDbRow | null;
+}
 
+export default async function ProfilePage() {
+  const { user, insforge } = await requireAuthenticatedPage();
+
+  const profile = await getProfile(insforge, user.id);
   const initialProfile = dbToForm(profile, user);
 
   return (

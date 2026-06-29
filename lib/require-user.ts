@@ -29,3 +29,20 @@ export async function requireUser(): Promise<{
 
   return { user: authData.user!, insforge };
 }
+
+export async function requireAuthenticatedPage(): Promise<{
+  user: NonNullable<
+    Awaited<ReturnType<InsforgeClient["auth"]["getCurrentUser"]>>["data"]["user"]
+  >;
+  insforge: InsforgeClient;
+}> {
+  try {
+    return await requireUser();
+  } catch (error) {
+    if (error instanceof AuthError) {
+      const { redirect } = await import("next/navigation");
+      redirect("/login");
+    }
+    throw error;
+  }
+}

@@ -1,4 +1,5 @@
 import type { ProfileFormData, WorkExperience, Education } from "@/types";
+import { parseCommaList, parseYearsExperience } from "@/lib/utils";
 import {
   WORK_AUTHORIZATIONS,
   EXPERIENCE_LEVELS,
@@ -92,18 +93,6 @@ export function dbToForm(
     resumePdfUrl: profile?.resume_pdf_url ?? "",
     resumeStorageKey: profile?.resume_storage_key ?? "",
   };
-}
-
-function parseCommaList(value: string): string[] {
-  return value
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
-}
-
-function parseYearsExperience(value: string): number | null {
-  const parsed = parseInt(value, 10);
-  return Number.isNaN(parsed) ? null : parsed;
 }
 
 export function formToDb(

@@ -55,6 +55,28 @@ export function safeParseJson<T>(json: string, fallback: T): T {
   }
 }
 
+export async function extractJson<T>(
+  systemPrompt: string,
+  userPrompt: string,
+  validate: (raw: unknown) => T | null,
+  opts?: CallLLMOptions,
+): Promise<{ success: true; data: T } | { success: false; error: string }> {
+  const result = await callLLM(systemPrompt, userPrompt, opts);
+  if (!result.success) return result;
+
+  const parsed = safeParseJson(result.content, null);
+  if (!parsed) {
+    return { success: false, error: "AI returned invalid JSON." };
+  }
+
+  const data = validate(parsed);
+  if (!data) {
+    return { success: false, error: "AI response failed validation." };
+  }
+
+  return { success: true, data };
+}
+
 export async function callLLM(
   systemPrompt: string,
   userPrompt: string,

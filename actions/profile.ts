@@ -5,23 +5,18 @@ import { withActionAuth } from "@/lib/with-auth";
 import { computeIsComplete } from "@/constants/profile-completion";
 import { validateResumeFile } from "@/lib/resume-upload";
 import { formToDb } from "@/mappers/profile-mapper";
+import { upsertProfile } from "@/data/profiles-repo";
 import { manualResumePath, RESUMES_BUCKET } from "@/lib/storage-paths";
 import type { ProfileFormData } from "@/types";
 
 export async function saveProfile(formData: ProfileFormData) {
   return withActionAuth(async ({ user, insforge }) => {
     const isComplete = computeIsComplete(formData);
-
     const profileRecord = formToDb(formData, user.id, isComplete);
 
-    const { error } = await insforge.database
-      .from("profiles")
-      .upsert([profileRecord], { ignoreDuplicates: false })
-      .select()
-      .single();
-
-    if (error) {
-      console.error("[actions/profile] upsert error:", error);
+    try {
+      await upsertProfile(insforge, profileRecord);
+    } catch {
       return { success: false, error: "Failed to save profile." };
     }
 

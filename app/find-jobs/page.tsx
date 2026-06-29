@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { createInsforgeServer } from "@/lib/insforge-server";
+import { requireAuthenticatedPage } from "@/lib/require-user";
 import { Footer } from "@/components/layout/Footer";
 import { SearchControls } from "@/components/find-jobs/SearchControls";
 import { JobFilters } from "@/components/find-jobs/JobFilters";
@@ -28,49 +28,46 @@ export default async function FindJobsPage({
   const sort = params.sort || "match_score";
   const search = (params.search || "").trim();
 
+  const { user, insforge } = await requireAuthenticatedPage();
   let jobs: JobRow[] = [];
   let totalItems = 0;
 
   try {
-    const insforge = await createInsforgeServer();
-    const { data: authData } = await insforge.auth.getCurrentUser();
-    if (authData?.user) {
-      let query = insforge.database
-        .from("jobs")
-        .select(
-          "id, company, title, match_score, salary, source, found_at, location, job_type, about_role, matched_skills, missing_skills, match_reason, source_url, external_apply_url",
-          { count: "exact" },
-        )
-        .eq("user_id", authData.user.id);
+    let query = insforge.database
+      .from("jobs")
+      .select(
+        "id, company, title, match_score, salary, source, found_at, location, job_type, about_role, matched_skills, missing_skills, match_reason, source_url, external_apply_url",
+        { count: "exact" },
+      )
+      .eq("user_id", user.id);
 
-      if (filter === "high") {
-        query = query.gte("match_score", MATCH_THRESHOLD);
-      } else if (filter === "low") {
-        query = query.lt("match_score", MATCH_THRESHOLD);
-      }
-
-      if (search) {
-        query = query.or(
-          `company.ilike.%${search}%,title.ilike.%${search}%`,
-        );
-      }
-
-      if (sort === "newest") {
-        query = query.order("found_at", { ascending: false });
-      } else if (sort === "oldest") {
-        query = query.order("found_at", { ascending: true });
-      } else {
-        query = query.order("match_score", { ascending: false });
-      }
-
-      const start = (currentPage - 1) * PAGE_SIZE;
-      const end = start + PAGE_SIZE - 1;
-      query = query.range(start, end);
-
-      const { data, count } = await query;
-      jobs = (data ?? []) as unknown as JobRow[];
-      totalItems = count ?? 0;
+    if (filter === "high") {
+      query = query.gte("match_score", MATCH_THRESHOLD);
+    } else if (filter === "low") {
+      query = query.lt("match_score", MATCH_THRESHOLD);
     }
+
+    if (search) {
+      query = query.or(
+        `company.ilike.%${search}%,title.ilike.%${search}%`,
+      );
+    }
+
+    if (sort === "newest") {
+      query = query.order("found_at", { ascending: false });
+    } else if (sort === "oldest") {
+      query = query.order("found_at", { ascending: true });
+    } else {
+      query = query.order("match_score", { ascending: false });
+    }
+
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const end = start + PAGE_SIZE - 1;
+    query = query.range(start, end);
+
+    const { data, count } = await query;
+    jobs = (data ?? []) as unknown as JobRow[];
+    totalItems = count ?? 0;
   } catch (error) {
     console.error("[find-jobs]", error);
   }

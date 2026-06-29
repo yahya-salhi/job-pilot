@@ -1,4 +1,4 @@
-import { callLLM, safeParseJson } from "@/lib/openrouter";
+import { extractJson } from "@/lib/openrouter";
 import type { JobScoreResult } from "./types";
 
 export async function scoreJob(
@@ -37,34 +37,24 @@ CANDIDATE:
 Skills: ${skillsList}
 Profile: ${profileSummary || "No profile details available"}`;
 
-  const result = await callLLM(systemPrompt, userPrompt, {
-    temperature: 0.3,
-    maxTokens: 300,
-  });
+  const llm = await extractJson(systemPrompt, userPrompt, (raw) => {
+    if (!raw || typeof raw !== "object") return null;
+    const data = raw as Record<string, unknown>;
+    return {
+      matchScore: Math.max(0, Math.min(100, (data.matchScore as number) || 0)),
+      matchReason: (data.matchReason as string) || "No match reason provided.",
+      matchedSkills: Array.isArray(data.matchedSkills) ? data.matchedSkills as string[] : [],
+      missingSkills: Array.isArray(data.missingSkills) ? data.missingSkills as string[] : [],
+    } satisfies JobScoreResult;
+  }, { temperature: 0.3, maxTokens: 300 });
 
-  if (!result.success) {
+  if (!llm.success) {
     return {
       matchScore: 0,
-      matchReason: "Failed to score this job.",
+      matchReason: `Failed to score this job: ${llm.error}`,
       matchedSkills: [],
       missingSkills: [],
     };
   }
-
-  const parsed = safeParseJson(result.content, null as JobScoreResult | null);
-  if (!parsed) {
-    return {
-      matchScore: 0,
-      matchReason: "Failed to parse scoring response.",
-      matchedSkills: [],
-      missingSkills: [],
-    };
-  }
-
-  return {
-    matchScore: Math.max(0, Math.min(100, parsed.matchScore || 0)),
-    matchReason: parsed.matchReason || "No match reason provided.",
-    matchedSkills: Array.isArray(parsed.matchedSkills) ? parsed.matchedSkills : [],
-    missingSkills: Array.isArray(parsed.missingSkills) ? parsed.missingSkills : [],
-  };
+  return llm.data;
 }

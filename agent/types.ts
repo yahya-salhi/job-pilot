@@ -13,7 +13,6 @@ export type AgentFindResult = {
   strongMatches: number;
   message: string;
   error?: string;
-  events: AnalyticsEvent[];
 };
 
 export type AgentRunRecord = {

@@ -1,4 +1,4 @@
-import { callLLM, getResumeGenerateModel, safeParseJson } from "@/lib/openrouter";
+import { extractJson, getResumeGenerateModel } from "@/lib/openrouter";
 import {
   renderResumePdf,
   type ResumeContent,
@@ -97,11 +97,15 @@ export async function generateResumePipeline(
     };
   }
 
-  const llmResult = await callLLM(buildSystemPrompt(), buildUserPrompt(profile), {
-    model: getResumeGenerateModel(),
-    temperature: 0.7,
-    maxTokens: 1000,
-  });
+  const llmResult = await extractJson(
+    buildSystemPrompt(),
+    buildUserPrompt(profile),
+    (raw) => {
+      if (!raw || typeof raw !== "object") return null;
+      return raw as ResumeContent;
+    },
+    { model: getResumeGenerateModel(), temperature: 0.7, maxTokens: 1000 },
+  );
 
   if (!llmResult.success) {
     return {
@@ -111,14 +115,7 @@ export async function generateResumePipeline(
     };
   }
 
-  const resumeContent = safeParseJson(llmResult.content, null as ResumeContent | null);
-  if (!resumeContent) {
-    return {
-      success: false,
-      error: "AI generation returned invalid data. Please try again.",
-      status: 502,
-    };
-  }
+  const resumeContent = llmResult.data;
 
   const contact: ContactInfo = {
     email: profile.email || undefined,
