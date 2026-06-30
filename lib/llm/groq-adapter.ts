@@ -2,18 +2,18 @@ import OpenAI from "openai";
 import type { ILLMProvider, LLMExtractOptions, LLMResult, ModelCapability } from "@/types/llm-provider";
 
 const MODEL_DEFAULTS: Record<ModelCapability, string> = {
-  scoring: "openai/gpt-4o",
-  research: "meta-llama/llama-3.1-8b-instruct",
-  "resume-extract": "meta-llama/llama-3.1-8b-instruct",
-  "resume-generate": "meta-llama/llama-3.1-8b-instruct",
+  scoring: "llama-3.3-70b-versatile",
+  research: "llama-3.1-8b-instant",
+  "resume-extract": "llama-3.1-8b-instant",
+  "resume-generate": "llama-3.3-70b-versatile",
 };
 
 function resolveModel(capability: ModelCapability): string {
   const envMap: Record<ModelCapability, string | undefined> = {
-    scoring: process.env.OPENROUTER_SCORING_MODEL,
-    research: process.env.OPENROUTER_RESEARCH_MODEL,
-    "resume-extract": process.env.OPENROUTER_RESUME_EXTRACT_MODEL,
-    "resume-generate": process.env.OPENROUTER_RESUME_GENERATE_MODEL,
+    scoring: process.env.GROQ_SCORING_MODEL,
+    research: process.env.GROQ_RESEARCH_MODEL,
+    "resume-extract": process.env.GROQ_RESUME_EXTRACT_MODEL,
+    "resume-generate": process.env.GROQ_RESUME_GENERATE_MODEL,
   };
   return envMap[capability] ?? MODEL_DEFAULTS[capability];
 }
@@ -26,18 +26,18 @@ function safeParseJson<T>(json: string, fallback: T): T {
   }
 }
 
-export class OpenRouterAdapter implements ILLMProvider {
+export class GroqAdapter implements ILLMProvider {
   private client: OpenAI | null = null;
 
   private getClient(): OpenAI {
     if (!this.client) {
-      const apiKey = process.env.OPENROUTER_API_KEY;
+      const apiKey = process.env.GROQ_API_KEY;
       if (!apiKey) {
-        throw new Error("OPENROUTER_API_KEY is not configured.");
+        throw new Error("GROQ_API_KEY is not configured.");
       }
       this.client = new OpenAI({
         apiKey,
-        baseURL: "https://openrouter.ai/api/v1",
+        baseURL: "https://api.groq.com/openai/v1",
       });
     }
     return this.client;
@@ -82,9 +82,9 @@ export class OpenRouterAdapter implements ILLMProvider {
     user: string,
     opts?: LLMExtractOptions,
   ): Promise<LLMResult<string>> {
-    let openrouter: OpenAI;
+    let groq: OpenAI;
     try {
-      openrouter = this.getClient();
+      groq = this.getClient();
     } catch {
       return { success: false, error: "AI is not configured. Contact support." };
     }
@@ -92,7 +92,7 @@ export class OpenRouterAdapter implements ILLMProvider {
     const capability = opts?.capability ?? "scoring";
 
     try {
-      const response = await openrouter.chat.completions.create({
+      const response = await groq.chat.completions.create({
         model: opts?.capability ? resolveModel(opts.capability) : MODEL_DEFAULTS.scoring,
         response_format: { type: "json_object" },
         temperature: opts?.temperature ?? 0.3,
@@ -110,10 +110,11 @@ export class OpenRouterAdapter implements ILLMProvider {
 
       return { success: true, data: content };
     } catch (error) {
-      console.error("[openrouter/callLLM]", error);
+      const message = error instanceof Error ? error.message : String(error);
+      console.error("[groq/callLLM]", message);
       return {
         success: false,
-        error: "AI request failed. Please try again.",
+        error: `AI request failed: ${message}`,
       };
     }
   }

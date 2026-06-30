@@ -185,6 +185,33 @@ export async function getRecentResearchJobs(
   return (data ?? []) as ResearchJobRow[];
 }
 
+export async function getCompanyResearchDayCounts(
+  insforge: InsforgeClient,
+  userId: string,
+  days = 7,
+): Promise<{ day: string; count: number }[]> {
+  const since = new Date();
+  since.setDate(since.getDate() - days);
+
+  const { data } = await insforge.database
+    .from("jobs")
+    .select("found_at")
+    .eq("user_id", userId)
+    .not("company_research", "is", null)
+    .gte("found_at", since.toISOString())
+    .order("found_at", { ascending: true });
+
+  if (!data) return [];
+
+  const counts = new Map<string, number>();
+  for (const row of data as { found_at: string }[]) {
+    const day = row.found_at?.slice(0, 10);
+    if (day) counts.set(day, (counts.get(day) ?? 0) + 1);
+  }
+
+  return Array.from(counts, ([day, count]) => ({ day, count }));
+}
+
 export async function saveJob(
   insforge: InsforgeClient,
   runId: string,
