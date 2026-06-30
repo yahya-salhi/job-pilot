@@ -37,11 +37,11 @@ export default async function JobDetailsPage({
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <main className="grow p-6 md:p-8">
-        <div className="max-w-4xl mx-auto space-y-4">
+      <main className="grow px-4 md:px-6 lg:px-8 py-6 lg:py-8">
+        <div className="max-w-4xl mx-auto space-y-4 lg:space-y-6">
           <Link
             href="/find-jobs"
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors"
+            className="inline-flex items-center gap-1.5 py-2 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Jobs

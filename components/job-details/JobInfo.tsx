@@ -51,25 +51,25 @@ export function JobInfo({ title, company, matchScore, externalApplyUrl, salary, 
     : "—";
 
   return (
-    <div className="bg-surface border border-border rounded-2xl p-6 shadow-sm">
+    <div className="bg-surface border border-border rounded-2xl p-4 lg:p-6 shadow-sm">
       <div className="flex flex-col sm:flex-row sm:items-start gap-4">
         <div className="w-12 h-12 rounded-xl bg-accent-muted flex items-center justify-center shrink-0">
           <Briefcase className="w-6 h-6 text-accent" />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-xl font-bold text-text-primary truncate">{title ?? "Untitled Position"}</h1>
+            <h1 className="text-lg md:text-xl font-bold text-text-primary truncate">{title ?? "Untitled Position"}</h1>
             {matchScore !== null && <ScoreBadge score={matchScore} />}
           </div>
           <p className="text-sm text-text-secondary mt-1">{company ?? "Unknown Company"}</p>
         </div>
-        <div className="flex gap-2 shrink-0">
+        <div className="flex flex-col sm:flex-row gap-2 shrink-0 w-full sm:w-auto">
           {externalApplyUrl && (
             <a
               href={externalApplyUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 bg-accent text-accent-foreground font-medium text-sm px-4 py-2 rounded-md hover:bg-accent-dark transition-colors"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 bg-accent text-accent-foreground font-medium text-sm px-4 py-2.5 lg:py-2 rounded-md hover:bg-accent-dark transition-colors"
             >
               <Briefcase className="w-4 h-4" />
               View Job Post

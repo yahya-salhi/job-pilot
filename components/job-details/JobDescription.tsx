@@ -31,8 +31,8 @@ export function JobDescription({ aboutRole, responsibilities, requirements, nice
   if (!hasContent) return null;
 
   return (
-    <div className="bg-surface border border-border rounded-2xl p-6 shadow-sm space-y-5">
-      <h2 className="text-base font-semibold text-text-primary">Job Description</h2>
+    <div className="bg-surface border border-border rounded-2xl p-4 lg:p-6 shadow-sm space-y-5">
+      <h2 className="text-sm lg:text-base font-semibold text-text-primary">Job Description</h2>
 
       {aboutRole && (
         <p className="text-sm text-text-secondary leading-relaxed">{aboutRole}</p>
@@ -45,7 +45,7 @@ export function JobDescription({ aboutRole, responsibilities, requirements, nice
 
       {aboutCompany && (
         <section>
-          <h2 className="text-base font-semibold text-text-primary mb-2">About the Company</h2>
+          <h2 className="text-sm lg:text-base font-semibold text-text-primary mb-2">About the Company</h2>
           <p className="text-sm text-text-secondary leading-relaxed">{aboutCompany}</p>
         </section>
       )}
