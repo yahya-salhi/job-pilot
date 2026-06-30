@@ -40,7 +40,7 @@ function buildCsp(nonce: string): string {
   const csp = `
     default-src 'self';
     script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isDev ? " 'unsafe-eval'" : ""};
-    style-src 'self'${isDev ? " 'unsafe-inline'" : ` 'nonce-${nonce}'`};
+    style-src 'self' 'unsafe-inline';
     img-src 'self' blob: data: ${posthogHost} https://www.gstatic.com https://github.githubassets.com;
     connect-src 'self' ${posthogHost} ${insforgeUrl};
     font-src 'self' data:;
