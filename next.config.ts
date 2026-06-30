@@ -4,6 +4,14 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["pdf-parse", "pdfjs-dist", "@napi-rs/canvas"],
   productionBrowserSourceMaps: false,
   poweredByHeader: false,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "github.githubassets.com",
+      },
+    ],
+  },
   turbopack: {
     root: process.cwd(),
   },
