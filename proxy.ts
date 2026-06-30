@@ -49,7 +49,6 @@ function buildCsp(nonce: string): string {
     form-action 'self';
     frame-ancestors 'none';
     upgrade-insecure-requests;
-    ${isDev ? "" : "require-trusted-types-for 'script'; trusted-types default;"}
   `;
   return csp.replace(/\s{2,}/g, " ").trim();
 }
