@@ -11,9 +11,6 @@ export type OAuthProvider = (typeof ALLOWED_PROVIDERS)[number];
 const CODE_VERIFIER_COOKIE = "insforge_code_verifier";
 
 async function resolveOrigin(): Promise<string> {
-  if (process.env.NEXT_PUBLIC_APP_URL) {
-    return process.env.NEXT_PUBLIC_APP_URL;
-  }
   const headerList = await headers();
   const host =
     headerList.get("x-forwarded-host") ?? headerList.get("host") ?? "localhost:3000";
