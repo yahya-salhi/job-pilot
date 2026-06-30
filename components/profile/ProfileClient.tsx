@@ -166,7 +166,7 @@ export function ProfileClient({ initialProfile }: Props) {
 
   return (
     <div className="min-h-screen bg-background">
-      <main className="max-w-250 mx-auto px-6 py-10 space-y-8">
+      <main className="max-w-250 mx-auto px-4 md:px-6 lg:px-8 py-6 lg:py-10 space-y-4 lg:space-y-6">
         <ProfileBanner
           percentage={percentage}
           missingFields={missingFields}
@@ -186,9 +186,9 @@ export function ProfileClient({ initialProfile }: Props) {
         />
 
         <div className="bg-surface border border-border rounded-2xl shadow-sm overflow-hidden">
-          <div className="p-6 space-y-10">
+          <div className="p-4 lg:p-6 space-y-6 lg:space-y-10">
             <div>
-              <h3 className="text-base font-semibold text-text-primary">
+              <h3 className="text-sm lg:text-base font-semibold text-text-primary">
                 Profile Information
               </h3>
               <p className="text-sm text-text-secondary mt-1">
@@ -221,7 +221,7 @@ export function ProfileClient({ initialProfile }: Props) {
               id="save-profile-btn"
               onClick={handleSave}
               disabled={isPending || saveStatus === "saving"}
-              className="w-full bg-accent text-white py-2 px-4 rounded-md font-medium text-sm hover:bg-accent-dark transition-colors mt-4 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full min-h-11 bg-accent text-white py-2 px-4 rounded-md font-medium text-sm hover:bg-accent-dark transition-colors mt-4 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {saveButtonLabel}
             </button>

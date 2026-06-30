@@ -29,7 +29,7 @@ export function PersonalInfoForm({ form, onChange }: Props) {
             type="text"
             value={form.fullName}
             onChange={(e) => onChange("fullName", e.target.value)}
-            className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+            className="w-full bg-surface border border-border rounded-md px-3 py-2.5 lg:py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
           />
         </div>
         <div className="space-y-2">
@@ -44,7 +44,7 @@ export function PersonalInfoForm({ form, onChange }: Props) {
             type="email"
             value={form.email}
             disabled
-            className="w-full bg-surface-secondary border border-border rounded-md px-3 py-2 text-sm text-text-primary cursor-not-allowed opacity-60 outline-none"
+            className="w-full bg-surface-secondary border border-border rounded-md px-3 py-2.5 lg:py-2 text-sm text-text-primary cursor-not-allowed opacity-60 outline-none"
           />
         </div>
         <div className="space-y-2">
@@ -59,7 +59,7 @@ export function PersonalInfoForm({ form, onChange }: Props) {
             type="text"
             value={form.phone}
             onChange={(e) => onChange("phone", e.target.value)}
-            className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+            className="w-full bg-surface border border-border rounded-md px-3 py-2.5 lg:py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
           />
         </div>
         <div className="space-y-2">
@@ -75,7 +75,7 @@ export function PersonalInfoForm({ form, onChange }: Props) {
             value={form.location}
             onChange={(e) => onChange("location", e.target.value)}
             placeholder="City, Country"
-            className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+            className="w-full bg-surface border border-border rounded-md px-3 py-2.5 lg:py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
           />
         </div>
         <div className="space-y-2">
@@ -90,7 +90,7 @@ export function PersonalInfoForm({ form, onChange }: Props) {
             type="text"
             value={form.linkedinUrl}
             onChange={(e) => onChange("linkedinUrl", e.target.value)}
-            className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+            className="w-full bg-surface border border-border rounded-md px-3 py-2.5 lg:py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
           />
         </div>
         <div className="space-y-2">
@@ -105,7 +105,7 @@ export function PersonalInfoForm({ form, onChange }: Props) {
             type="text"
             value={form.portfolioUrl}
             onChange={(e) => onChange("portfolioUrl", e.target.value)}
-            className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+            className="w-full bg-surface border border-border rounded-md px-3 py-2.5 lg:py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
           />
         </div>
         <div className="space-y-2">
@@ -120,7 +120,7 @@ export function PersonalInfoForm({ form, onChange }: Props) {
               id="work-auth"
               value={form.workAuthorization}
               onChange={(e) => onChange("workAuthorization", e.target.value as WorkAuthorization)}
-              className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary appearance-none focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+              className="w-full bg-surface border border-border rounded-md px-3 py-2.5 lg:py-2 text-sm text-text-primary appearance-none focus:ring-1 focus:ring-accent focus:border-accent outline-none"
             >
               {WORK_AUTHORIZATIONS.map((value) => (
                 <option key={value} value={value}>

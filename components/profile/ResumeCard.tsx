@@ -41,9 +41,9 @@ export function ResumeCard({
     : null;
 
   return (
-    <div className="bg-surface border border-border rounded-2xl p-6 shadow-sm space-y-6">
+    <div className="bg-surface border border-border rounded-2xl p-4 lg:p-6 shadow-sm space-y-6">
       <div>
-        <h3 className="text-base font-semibold text-text-primary">Resume</h3>
+        <h3 className="text-sm lg:text-base font-semibold text-text-primary">Resume</h3>
         <p className="text-sm text-text-secondary mt-1">
           Upload an existing resume to auto-fill the profile, or generate a new
           tailored one from your details below.
@@ -59,10 +59,10 @@ export function ResumeCard({
       />
 
       <div
-        className="border-2 border-dashed border-border-muted rounded-xl p-12 flex flex-col items-center justify-center text-center space-y-4 cursor-pointer hover:border-accent/50 transition-colors"
+        className="border-2 border-dashed border-border-muted rounded-xl p-6 lg:p-12 flex flex-col items-center justify-center text-center space-y-4 cursor-pointer hover:border-accent/50 transition-colors"
         onClick={() => fileInputRef.current?.click()}
       >
-        <div className="w-10 h-10 rounded-full bg-accent-muted flex items-center justify-center text-accent">
+        <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-accent-muted flex items-center justify-center text-accent">
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
           </svg>
@@ -106,7 +106,7 @@ export function ResumeCard({
             e.stopPropagation();
             fileInputRef.current?.click();
           }}
-          className="px-4 py-2 border border-border rounded-md text-xs font-medium text-text-primary hover:bg-surface-secondary transition-colors"
+            className="px-4 py-2.5 lg:py-2 border border-border rounded-md text-xs font-medium text-text-primary hover:bg-surface-secondary transition-colors"
         >
           {displayName ? "Replace Resume" : "Select Resume"}
         </button>
@@ -121,7 +121,7 @@ export function ResumeCard({
             type="button"
             onClick={onExtract}
             disabled={isExtracting}
-            className="bg-accent text-white px-4 py-2 rounded-md text-xs font-medium flex items-center gap-2 hover:bg-accent-dark transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            className="bg-accent text-white px-4 py-2.5 lg:py-2 rounded-md text-xs font-medium flex items-center gap-2 hover:bg-accent-dark transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
@@ -144,7 +144,7 @@ export function ResumeCard({
         <p className="text-sm text-error font-medium">{generateError}</p>
       )}
 
-      <div className="flex items-center justify-between pt-4 border-t border-border-light">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 pt-4 border-t border-border-light">
         <p className="text-xs text-text-secondary">
           Need a fresh document based on the fields below?
         </p>

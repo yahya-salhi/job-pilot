@@ -9,7 +9,7 @@ type Props = {
 export function ProfileBanner({ percentage, missingFields, isComplete }: Props) {
   if (isComplete) {
     return (
-      <div className="bg-surface border border-border rounded-2xl p-6 flex items-center justify-between shadow-sm relative overflow-hidden">
+      <div className="bg-surface border border-border rounded-2xl p-4 lg:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 shadow-sm relative overflow-hidden">
         <div className="flex items-start gap-4">
           <div className="mt-1">
             <div className="w-5 h-5 rounded-full bg-success flex items-center justify-center">
@@ -19,15 +19,15 @@ export function ProfileBanner({ percentage, missingFields, isComplete }: Props) 
             </div>
           </div>
           <div>
-            <h2 className="text-base font-semibold text-text-primary">Profile is complete</h2>
-            <p className="text-sm text-text-secondary mt-1 max-w-[400px] leading-relaxed">
+            <h2 className="text-sm lg:text-base font-semibold text-text-primary">Profile is complete</h2>
+            <p className="text-sm text-text-secondary mt-1 max-w-100 leading-relaxed">
               All required fields are filled. Your profile is ready for job matching and resume generation.
             </p>
           </div>
         </div>
 
-        <div className="relative w-24 h-24 flex items-center justify-center flex-shrink-0">
-          <svg className="w-full h-full transform -rotate-90">
+        <div className="relative w-16 h-16 sm:w-24 sm:h-24 flex items-center justify-center shrink-0">
+          <svg className="w-full h-full transform -rotate-90" viewBox="0 0 96 96">
             <circle
               cx="48"
               cy="48"
@@ -57,7 +57,7 @@ export function ProfileBanner({ percentage, missingFields, isComplete }: Props) 
   }
 
   return (
-    <div className="bg-surface border border-border rounded-2xl p-6 flex items-center justify-between shadow-sm relative overflow-hidden">
+    <div className="bg-surface border border-border rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 shadow-sm relative overflow-hidden">
       <div className="flex items-start gap-4">
         <div className="mt-1">
           <div className="w-5 h-5 rounded-full border-2 border-error flex items-center justify-center">
@@ -65,8 +65,8 @@ export function ProfileBanner({ percentage, missingFields, isComplete }: Props) 
           </div>
         </div>
         <div>
-          <h2 className="text-base font-semibold text-text-primary">Profile needs attention</h2>
-          <p className="text-sm text-text-secondary mt-1 max-w-[400px] leading-relaxed">
+          <h2 className="text-sm lg:text-base font-semibold text-text-primary">Profile needs attention</h2>
+          <p className="text-sm text-text-secondary mt-1 max-w-100 leading-relaxed">
             Complete the missing fields to improve your chance of getting
             tailored matches and generating quality resumes.
           </p>
@@ -85,8 +85,8 @@ export function ProfileBanner({ percentage, missingFields, isComplete }: Props) 
         </div>
       </div>
 
-      <div className="relative w-24 h-24 flex items-center justify-center flex-shrink-0">
-        <svg className="w-full h-full transform -rotate-90">
+      <div className="relative w-16 h-16 sm:w-24 sm:h-24 flex items-center justify-center shrink-0">
+        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 96 96">
           <circle
             cx="48"
             cy="48"
