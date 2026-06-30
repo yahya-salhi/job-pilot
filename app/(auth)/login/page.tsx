@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState, Suspense } from "react";
 import { signInWithOAuthAction, type OAuthProvider } from "@/actions/auth";
 import { Footer } from "@/components/layout/Footer";
@@ -7,7 +8,8 @@ import { useSearchParams } from "next/navigation";
 
 const ERROR_MESSAGES: Record<string, string> = {
   oauth_failed: "Sign-in failed. Please try again or use another method.",
-  missing_code: "Authentication failed. No code was returned from the provider.",
+  missing_code:
+    "Authentication failed. No code was returned from the provider.",
   missing_verifier: "Your sign-in session expired. Please try again.",
   exchange_failed: "We couldn't complete your sign-in. Please try again.",
   invalid_provider: "That sign-in method isn't supported.",
@@ -15,7 +17,9 @@ const ERROR_MESSAGES: Record<string, string> = {
 
 const LoginContent = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [pendingProvider, setPendingProvider] = useState<OAuthProvider | null>(null);
+  const [pendingProvider, setPendingProvider] = useState<OAuthProvider | null>(
+    null,
+  );
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -34,9 +38,9 @@ const LoginContent = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-surface">
-      <main className="grow flex flex-col items-center justify-center px-6 py-12">
-        <div className="w-full max-w-md bg-background border border-border-light rounded-2xl shadow-xl overflow-hidden">
-          <div className="p-8">
+      <main className="grow flex flex-col items-center justify-center px-4 md:px-6 lg:px-8 py-8 lg:py-12">
+        <div className="w-full sm:max-w-md bg-background border border-border-light rounded-2xl shadow-xl overflow-hidden">
+          <div className="p-6 md:p-8">
             <h1 className="text-3xl font-extrabold text-text-primary tracking-tight mb-2">
               Welcome back
             </h1>
@@ -57,11 +61,13 @@ const LoginContent = () => {
               <button
                 onClick={() => handleOAuthLogin("google")}
                 disabled={pendingProvider !== null}
-                className="w-full flex items-center justify-center gap-3 bg-surface text-text-primary border border-border-muted hover:bg-surface-secondary font-semibold text-sm px-6 py-3 rounded-md transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full min-h-11 flex items-center justify-center gap-3 bg-surface text-text-primary border border-border-muted hover:bg-surface-secondary font-semibold text-sm px-6 py-3 rounded-md transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                <img
+                <Image
                   src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
                   alt="Google"
+                  width={20}
+                  height={20}
                   className="w-5 h-5"
                 />
                 {pendingProvider === "google"
@@ -72,11 +78,13 @@ const LoginContent = () => {
               <button
                 onClick={() => handleOAuthLogin("github")}
                 disabled={pendingProvider !== null}
-                className="w-full flex items-center justify-center gap-3 bg-text-primary text-white hover:bg-opacity-90 font-semibold text-sm px-6 py-3 rounded-md transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full min-h-11 flex items-center justify-center gap-3 bg-text-primary text-white hover:bg-opacity-90 font-semibold text-sm px-6 py-3 rounded-md transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                <img
+                <Image
                   src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
                   alt="GitHub"
+                  width={20}
+                  height={20}
                   className="w-5 h-5 invert"
                 />
                 {pendingProvider === "github"
@@ -89,11 +97,17 @@ const LoginContent = () => {
           <div className="bg-surface-secondary px-8 py-4 border-t border-border-light">
             <p className="text-xs text-center text-text-secondary">
               By continuing, you agree to our{" "}
-              <a href="/terms-and-conditions" className="underline hover:text-text-primary">
+              <a
+                href="/terms-and-conditions"
+                className="underline hover:text-text-primary"
+              >
                 Terms of Service
               </a>{" "}
               and{" "}
-              <a href="/privacy-policy" className="underline hover:text-text-primary">
+              <a
+                href="/privacy-policy"
+                className="underline hover:text-text-primary"
+              >
                 Privacy Policy
               </a>
               .
