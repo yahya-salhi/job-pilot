@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 function buildHref(searchParams: URLSearchParams, updates: Record<string, string>) {
@@ -28,10 +28,6 @@ export function JobFilters() {
   const currentSearch = searchParams.get("search") || "";
 
   const [searchInput, setSearchInput] = useState(currentSearch);
-
-  useEffect(() => {
-    setSearchInput(currentSearch);
-  }, [currentSearch]);
 
   const navigate = useCallback(
     (updates: Record<string, string>) => {
@@ -75,7 +71,7 @@ export function JobFilters() {
           onChange={(e) => setSearchInput(e.target.value)}
           onKeyDown={handleSearchKeyDown}
           onBlur={handleSearchBlur}
-          className="w-full bg-surface border border-border rounded-md pl-3 pr-8 py-2 text-sm text-text-primary placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+              className="w-full bg-surface border border-border rounded-md pl-3 pr-8 py-2.5 lg:py-2 text-sm text-text-primary placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent outline-none"
         />
         {searchInput && (
           <button
@@ -90,7 +86,7 @@ export function JobFilters() {
         value={currentFilter}
         onChange={(e) => handleFilterChange(e.target.value)}
         aria-label="Filter by match score"
-        className="bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary appearance-none focus:ring-1 focus:ring-accent focus:border-accent outline-none cursor-pointer"
+        className="w-full sm:w-auto bg-surface border border-border rounded-md px-3 py-2.5 lg:py-2 text-sm text-text-primary appearance-none focus:ring-1 focus:ring-accent focus:border-accent outline-none cursor-pointer"
       >
         <option value="all">All Matches</option>
         <option value="high">High Match</option>
@@ -100,7 +96,7 @@ export function JobFilters() {
         value={currentSort}
         onChange={(e) => handleSortChange(e.target.value)}
         aria-label="Sort jobs by"
-        className="bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary appearance-none focus:ring-1 focus:ring-accent focus:border-accent outline-none cursor-pointer"
+        className="w-full sm:w-auto bg-surface border border-border rounded-md px-3 py-2.5 lg:py-2 text-sm text-text-primary appearance-none focus:ring-1 focus:ring-accent focus:border-accent outline-none cursor-pointer"
       >
         <option value="match_score">Match Score</option>
         <option value="newest">Newest</option>

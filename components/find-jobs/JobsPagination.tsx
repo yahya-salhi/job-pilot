@@ -15,17 +15,39 @@ export function JobsPagination({ currentPage, totalItems, pageSize, basePath, se
 
   if (totalPages <= 1) return null;
 
-  const pages: number[] = [];
-  for (let i = 1; i <= totalPages; i++) {
-    pages.push(i);
-  }
-
   const pageHref = (page: number) => {
     const params = new URLSearchParams(searchParamsString);
     params.set("page", String(page));
     const qs = params.toString();
     return `${basePath}?${qs}`;
   };
+
+  const getVisiblePages = () => {
+    const maxVisible = 5;
+    const pages: (number | "ellipsis")[] = [];
+    if (totalPages <= maxVisible) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+      return pages;
+    }
+    let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+    let end = start + maxVisible - 1;
+    if (end > totalPages) {
+      end = totalPages;
+      start = Math.max(1, end - maxVisible + 1);
+    }
+    if (start > 1) {
+      pages.push(1);
+      if (start > 2) pages.push("ellipsis");
+    }
+    for (let i = start; i <= end; i++) pages.push(i);
+    if (end < totalPages) {
+      if (end < totalPages - 1) pages.push("ellipsis");
+      pages.push(totalPages);
+    }
+    return pages;
+  };
+
+  const visiblePages = getVisiblePages();
 
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4">
@@ -47,19 +69,25 @@ export function JobsPagination({ currentPage, totalItems, pageSize, basePath, se
           </span>
         )}
 
-        {pages.map((page) => (
-          <Link
-            key={page}
-            href={pageHref(page)}
-            className={`w-8 h-8 text-sm font-medium rounded-md transition-colors flex items-center justify-center ${
-              page === currentPage
-                ? "bg-accent text-accent-foreground"
-                : "text-text-secondary hover:bg-surface-secondary"
-            }`}
-          >
-            {page}
-          </Link>
-        ))}
+        {visiblePages.map((page, i) =>
+          page === "ellipsis" ? (
+            <span key={`ellipsis-${i}`} className="w-8 h-8 text-sm text-text-muted flex items-center justify-center">
+              ...
+            </span>
+          ) : (
+            <Link
+              key={page}
+              href={pageHref(page)}
+              className={`hidden sm:inline-flex w-8 h-8 text-sm font-medium rounded-md transition-colors items-center justify-center ${
+                page === currentPage
+                  ? "bg-accent text-accent-foreground"
+                  : "text-text-secondary hover:bg-surface-secondary"
+              }`}
+            >
+              {page}
+            </Link>
+          )
+        )}
 
         {currentPage < totalPages ? (
           <Link
