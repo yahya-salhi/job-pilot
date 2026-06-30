@@ -36,7 +36,7 @@ export function EducationForm({ form, onChange }: Props) {
               id="degree"
               value={form.education.degree}
               onChange={(e) => updateEducation("degree", e.target.value as Degree)}
-              className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary appearance-none focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+              className="w-full bg-surface border border-border rounded-md px-3 py-2.5 lg:py-2 text-sm text-text-primary appearance-none focus:ring-1 focus:ring-accent focus:border-accent outline-none"
             >
               {DEGREES.map((value) => (
                 <option key={value} value={value}>
@@ -63,7 +63,7 @@ export function EducationForm({ form, onChange }: Props) {
             type="text"
             value={form.education.field}
             onChange={(e) => updateEducation("field", e.target.value)}
-            className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+            className="w-full bg-surface border border-border rounded-md px-3 py-2.5 lg:py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
           />
         </div>
         <div className="space-y-2">
@@ -79,7 +79,7 @@ export function EducationForm({ form, onChange }: Props) {
             value={form.education.institution}
             onChange={(e) => updateEducation("institution", e.target.value)}
             placeholder="E.g. State University"
-            className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+            className="w-full bg-surface border border-border rounded-md px-3 py-2.5 lg:py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
           />
         </div>
         <div className="space-y-2">
@@ -95,7 +95,7 @@ export function EducationForm({ form, onChange }: Props) {
             value={form.education.graduationYear}
             onChange={(e) => updateEducation("graduationYear", e.target.value)}
             placeholder="YYYY"
-            className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+            className="w-full bg-surface border border-border rounded-md px-3 py-2.5 lg:py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
           />
         </div>
       </div>

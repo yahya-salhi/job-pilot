@@ -43,7 +43,7 @@ export function SearchControls() {
   };
 
   return (
-    <div className="bg-surface border border-border rounded-2xl p-6 shadow-sm space-y-4">
+    <div className="bg-surface border border-border rounded-2xl p-4 lg:p-6 shadow-sm space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-1.5">
           <label className="text-xs font-semibold text-text-dark uppercase tracking-wider" htmlFor="job-title">
@@ -57,7 +57,7 @@ export function SearchControls() {
               placeholder="Frontend Engineer"
               value={jobTitle}
               onChange={(e) => setJobTitle(e.target.value)}
-              className="w-full bg-surface border border-border rounded-md pl-9 pr-3 py-2 text-sm text-text-primary placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+              className="w-full bg-surface border border-border rounded-md pl-9 pr-3 py-2.5 lg:py-2 text-sm text-text-primary placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent outline-none"
             />
           </div>
         </div>
@@ -73,7 +73,7 @@ export function SearchControls() {
               placeholder="Remote, New York..."
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              className="w-full bg-surface border border-border rounded-md pl-9 pr-3 py-2 text-sm text-text-primary placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+              className="w-full bg-surface border border-border rounded-md pl-9 pr-3 py-2.5 lg:py-2 text-sm text-text-primary placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent outline-none"
             />
           </div>
         </div>
@@ -82,7 +82,7 @@ export function SearchControls() {
       <button
         onClick={handleFindJobs}
         disabled={isLoading || !jobTitle.trim()}
-        className="bg-accent text-accent-foreground font-medium text-sm px-4 py-2 rounded-md flex items-center gap-2 hover:bg-accent-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full md:w-auto bg-accent text-accent-foreground font-medium text-sm px-4 py-2.5 md:py-2 rounded-md flex items-center justify-center gap-2 hover:bg-accent-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isLoading ? (
           <Loader2 className="w-4 h-4 animate-spin" />

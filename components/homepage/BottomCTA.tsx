@@ -2,11 +2,11 @@ import Link from "next/link";
 
 export function BottomCTA() {
   return (
-    <section className="relative w-full overflow-hidden bg-background py-20 px-6 md:px-8 border-b border-border-light">
+    <section className="relative w-full overflow-hidden bg-background py-16 lg:py-20 px-4 md:px-6 lg:px-8 border-b border-border-light">
       {/* Background Soft Gradient */}
       <div className="absolute inset-0 z-0 pointer-events-none opacity-60">
         <div 
-          className="absolute bottom-[-20%] left-1/2 -translate-x-1/2 w-[80%] aspect-square max-w-[800px] rounded-full blur-[100px]"
+          className="absolute bottom-[-20%] left-1/2 -translate-x-1/2 w-[80%] aspect-square max-w-200 rounded-full blur-[100px]"
           style={{
             background: "radial-gradient(circle, var(--color-accent-light) 0%, var(--color-info-light) 50%, transparent 100%)",
           }}
@@ -15,12 +15,12 @@ export function BottomCTA() {
 
       <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center text-center">
         {/* Title */}
-        <h2 className="text-3xl md:text-[40px] font-bold text-text-primary leading-tight tracking-tight max-w-2xl">
+        <h2 className="text-2xl sm:text-3xl md:text-[40px] font-bold text-text-primary leading-tight tracking-tight max-w-2xl">
           Your next job search can feel a lot less overwhelming
         </h2>
 
         {/* Subtitle */}
-        <p className="mt-4 text-base text-text-secondary max-w-xl leading-relaxed">
+        <p className="mt-4 text-sm md:text-base text-text-secondary max-w-xl leading-relaxed">
           Set up your profile, upload your resume, and start finding matches in minutes.
         </p>
 

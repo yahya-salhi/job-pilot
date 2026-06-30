@@ -63,7 +63,7 @@ export function ProfessionalInfoForm({ form, onChange }: Props) {
             type="text"
             value={form.currentTitle}
             onChange={(e) => onChange("currentTitle", e.target.value)}
-            className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+            className="w-full bg-surface border border-border rounded-md px-3 py-2.5 lg:py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -79,7 +79,7 @@ export function ProfessionalInfoForm({ form, onChange }: Props) {
                 id="exp-level"
                 value={form.experienceLevel}
                 onChange={(e) => onChange("experienceLevel", e.target.value as ExperienceLevel)}
-                className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary appearance-none focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+                className="w-full bg-surface border border-border rounded-md px-3 py-2.5 lg:py-2 text-sm text-text-primary appearance-none focus:ring-1 focus:ring-accent focus:border-accent outline-none"
               >
                 {EXPERIENCE_LEVELS.map((value) => (
                   <option key={value} value={value}>
@@ -106,7 +106,7 @@ export function ProfessionalInfoForm({ form, onChange }: Props) {
               type="text"
               value={form.yearsExperience}
               onChange={(e) => onChange("yearsExperience", e.target.value)}
-              className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+              className="w-full bg-surface border border-border rounded-md px-3 py-2.5 lg:py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
             />
           </div>
         </div>
@@ -131,7 +131,7 @@ export function ProfessionalInfoForm({ form, onChange }: Props) {
                 }
               }}
               placeholder="Add a skill"
-              className="flex-1 bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+              className="flex-1 bg-surface border border-border rounded-md px-3 py-2.5 lg:py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
             />
             <button
               type="button"
@@ -184,7 +184,7 @@ export function ProfessionalInfoForm({ form, onChange }: Props) {
                 }
               }}
               placeholder="E.g. FinTech, Healthcare"
-              className="flex-1 bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+              className="flex-1 bg-surface border border-border rounded-md px-3 py-2.5 lg:py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
             />
             <button
               type="button"

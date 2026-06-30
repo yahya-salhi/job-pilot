@@ -27,7 +27,7 @@ function ScoreBar({ score }: { score: number }) {
   }
 
   return (
-    <div className="flex items-center gap-3 min-w-[140px]">
+    <div className="flex items-center gap-3 min-w-35">
       <div className="flex-1 h-1.5 bg-border-light rounded-full overflow-hidden">
         <div
           className={`h-full rounded-full ${barColor}`}
@@ -61,8 +61,9 @@ export function JobsTable({ jobs }: Props) {
 
   return (
     <div className="overflow-x-auto">
+      {/* Desktop table — hidden below md */}
       <table className="w-full">
-        <thead>
+        <thead className="hidden md:table-header-group">
           <tr className="text-left">
             <th className="pb-3 pr-4 text-xs font-semibold text-text-secondary uppercase tracking-wider">Company</th>
             <th className="pb-3 pr-4 text-xs font-semibold text-text-secondary uppercase tracking-wider">Role</th>
@@ -73,7 +74,7 @@ export function JobsTable({ jobs }: Props) {
             <th className="pb-3 text-xs font-semibold text-text-secondary uppercase tracking-wider">Date Found</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="hidden md:table-row-group">
           {jobs.map((job) => (
             <tr
               key={job.id}
@@ -108,6 +109,33 @@ export function JobsTable({ jobs }: Props) {
           ))}
         </tbody>
       </table>
+
+      {/* Mobile card list — visible below md */}
+      <div className="md:hidden space-y-3">
+        {jobs.map((job) => (
+          <div
+            key={job.id}
+            tabIndex={0}
+            role="button"
+            className="bg-surface border border-border rounded-xl p-4 space-y-2 cursor-pointer hover:bg-surface-secondary transition-colors focus:outline-none focus:ring-2 focus:ring-accent focus:ring-inset"
+            onClick={() => router.push(`/find-jobs/${job.id}`)}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); router.push(`/find-jobs/${job.id}`) } }}
+          >
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-text-primary truncate">{job.company}</p>
+                <p className="text-sm text-text-primary truncate">{job.title}</p>
+              </div>
+              <SourceBadge source={job.source} />
+            </div>
+            <ScoreBar score={job.match_score ?? 0} />
+            <div className="flex items-center justify-between text-xs text-text-secondary">
+              <span>{job.salary ?? "—"}</span>
+              <span>{job.found_at}</span>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

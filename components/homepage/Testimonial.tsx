@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export function Testimonial() {
   return (
-    <section className="w-full bg-surface py-20 px-6 md:px-8 border-t border-b border-border-light">
+    <section className="w-full bg-surface py-16 lg:py-20 px-4 md:px-6 lg:px-8 border-t border-b border-border-light">
       <div className="max-w-4xl mx-auto flex flex-col items-center text-center">
         {/* Uppercase Accent Subtitle */}
         <span className="text-accent font-semibold text-xs tracking-wider uppercase">
@@ -10,7 +10,7 @@ export function Testimonial() {
         </span>
 
         {/* Big Quote */}
-        <blockquote className="mt-6 text-xl md:text-2xl lg:text-[26px] font-semibold text-text-primary leading-relaxed max-w-3xl">
+        <blockquote className="mt-6 text-lg md:text-xl lg:text-2xl font-semibold text-text-primary leading-relaxed max-w-full md:max-w-3xl">
           “I used to spend my evenings copy-pasting resumes. Now I open my dashboard to see interviews waiting. It feels like cheating. Had 3 offers on the table simultaneously.”
         </blockquote>
 

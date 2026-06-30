@@ -31,18 +31,18 @@ export default async function DashboardPage() {
   }
 
   // Fallback data to match visual mockup empty state if needed
-  const actEntries = data.activityEntries.length > 0 ? data.activityEntries : [
-    { type: "agent_run", description: "Found 8 jobs for Frontend Engineer", timestamp: "10 mins ago" },
-    { type: "company_research", description: "Researched Stripe", timestamp: "1 hour ago" },
-    { type: "agent_run", description: "Found 12 jobs for React Developer", timestamp: "2 hours ago" },
-    { type: "company_research", description: "Researched Vercel", timestamp: "Yesterday" },
-    { type: "agent_run", description: "Found 10 jobs for Full Stack Engineer", timestamp: "Yesterday" }
+  const actEntries: DashboardData["activityEntries"] = data.activityEntries.length > 0 ? data.activityEntries : [
+    { type: "agent_run", description: "Found 8 jobs for Frontend Engineer", timestamp: "10 mins ago", sortKey: "1" },
+    { type: "company_research", description: "Researched Stripe", timestamp: "1 hour ago", sortKey: "2" },
+    { type: "agent_run", description: "Found 12 jobs for React Developer", timestamp: "2 hours ago", sortKey: "3" },
+    { type: "company_research", description: "Researched Vercel", timestamp: "Yesterday", sortKey: "4" },
+    { type: "agent_run", description: "Found 10 jobs for Full Stack Engineer", timestamp: "Yesterday", sortKey: "5" }
   ];
 
   return (
     <div className="flex flex-col min-h-screen bg-[#F9FAFB]">
-      <main className="grow p-6 md:p-8">
-        <div className="max-w-[1240px] mx-auto space-y-5">
+      <main className="grow px-4 md:px-6 lg:px-8 py-6 lg:py-8">
+        <div className="max-w-310 mx-auto space-y-4 lg:space-y-6">
           {!data.profileComplete && <IncompleteProfileBanner />}
 
           <StatsBar
@@ -54,7 +54,7 @@ export default async function DashboardPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
             <div className="lg:col-span-6 xl:col-span-5">
-              <RecentActivity entries={actEntries as any} />
+              <RecentActivity entries={actEntries} />
             </div>
             <div className="lg:col-span-6 xl:col-span-7">
               <CompanyResearchChart data={data.companyResearchData ?? []} />

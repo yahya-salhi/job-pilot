@@ -71,7 +71,7 @@ export function WorkExperienceForm({ form, onChange }: Props) {
       {form.workExperience.map((exp, i) => (
         <div
           key={i}
-          className="border border-border rounded-xl p-6 space-y-6 bg-surface-secondary"
+          className="border border-border rounded-xl p-4 md:p-6 space-y-4 md:space-y-6 bg-surface-secondary"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-text-muted uppercase tracking-wider">
@@ -98,7 +98,7 @@ export function WorkExperienceForm({ form, onChange }: Props) {
                 type="text"
                 value={exp.company}
                 onChange={(e) => updateExperience(i, "company", e.target.value)}
-                className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+                className="w-full bg-surface border border-border rounded-md px-3 py-2.5 lg:py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
               />
             </div>
             <div className="space-y-2">
@@ -113,7 +113,7 @@ export function WorkExperienceForm({ form, onChange }: Props) {
                 type="text"
                 value={exp.title}
                 onChange={(e) => updateExperience(i, "title", e.target.value)}
-                className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+                className="w-full bg-surface border border-border rounded-md px-3 py-2.5 lg:py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
               />
             </div>
             <div className="space-y-2">
@@ -129,7 +129,7 @@ export function WorkExperienceForm({ form, onChange }: Props) {
                 value={exp.startDate}
                 onChange={(e) => updateExperience(i, "startDate", e.target.value)}
                 placeholder="E.g. January 2022"
-                className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+                className="w-full bg-surface border border-border rounded-md px-3 py-2.5 lg:py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
               />
             </div>
             <div className="space-y-2">
@@ -165,7 +165,7 @@ export function WorkExperienceForm({ form, onChange }: Props) {
                 onChange={(e) => updateExperience(i, "endDate", e.target.value)}
                 disabled={exp.currentlyWorking}
                 placeholder={exp.currentlyWorking ? "Present" : "E.g. March 2024"}
-                className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-surface border border-border rounded-md px-3 py-2.5 lg:py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none disabled:opacity-50 disabled:cursor-not-allowed"
               />
             </div>
             <div className="md:col-span-2 space-y-2">
@@ -182,7 +182,7 @@ export function WorkExperienceForm({ form, onChange }: Props) {
                 onChange={(e) =>
                   updateExperience(i, "responsibilities", e.target.value)
                 }
-                className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary resize-none focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+                className="w-full bg-surface border border-border rounded-md px-3 py-2.5 lg:py-2 text-sm text-text-primary resize-none focus:ring-1 focus:ring-accent focus:border-accent outline-none"
               />
             </div>
           </div>

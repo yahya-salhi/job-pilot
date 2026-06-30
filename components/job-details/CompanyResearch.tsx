@@ -66,8 +66,8 @@ export function CompanyResearch({ jobId, company, companyResearch }: Props) {
 
   if (companyResearch) {
     return (
-      <div className="bg-surface border border-border rounded-2xl p-6 shadow-sm space-y-5">
-        <h2 className="text-base font-semibold text-text-primary">Company Research</h2>
+      <div className="bg-surface border border-border rounded-2xl p-4 lg:p-6 shadow-sm space-y-5">
+        <h2 className="text-sm lg:text-base font-semibold text-text-primary">Company Research</h2>
 
         <DossierCard title="Company Overview">
           <p className="text-sm text-text-secondary leading-relaxed">{companyResearch.companyOverview}</p>
@@ -123,9 +123,9 @@ export function CompanyResearch({ jobId, company, companyResearch }: Props) {
   }
 
   return (
-    <div className="bg-surface border border-border rounded-2xl p-6 shadow-sm">
+    <div className="bg-surface border border-border rounded-2xl p-4 lg:p-6 shadow-sm">
       <div className="flex flex-col items-center text-center py-8">
-        <div className="w-12 h-12 rounded-xl bg-accent-muted flex items-center justify-center mb-4">
+        <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-accent-muted flex items-center justify-center mb-4">
           <Building2 className="w-6 h-6 text-accent" />
         </div>
         <h2 className="text-base font-semibold text-text-primary mb-1">Company Research</h2>
@@ -142,7 +142,7 @@ export function CompanyResearch({ jobId, company, companyResearch }: Props) {
           type="button"
           disabled={researching}
           onClick={handleResearch}
-          className="inline-flex items-center gap-1.5 bg-accent text-accent-foreground font-medium text-sm px-4 py-2 rounded-md hover:bg-accent-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 bg-accent text-accent-foreground font-medium text-sm px-4 py-2.5 lg:py-2 rounded-md hover:bg-accent-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {researching ? (
             <>

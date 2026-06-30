@@ -55,14 +55,14 @@ export default async function FindJobsPage({
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <main className="grow p-6 md:p-8">
-        <div className="max-w-7xl mx-auto space-y-6">
+      <main className="grow px-4 md:px-6 lg:px-8 py-6 lg:py-8">
+        <div className="max-w-7xl mx-auto space-y-4 lg:space-y-6">
           <h1 className="text-2xl font-bold text-text-primary">Find Jobs</h1>
           <SearchControls />
           <Suspense fallback={<div className="h-10" />}>
             <JobFilters />
           </Suspense>
-          <div className="bg-surface border border-border rounded-2xl p-6 shadow-sm">
+          <div className="bg-surface border border-border rounded-2xl p-4 lg:p-6 shadow-sm">
             {jobs.length > 0 ? (
               <>
                 <JobsTable jobs={jobs} />

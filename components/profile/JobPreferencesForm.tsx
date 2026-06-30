@@ -33,7 +33,7 @@ export function JobPreferencesForm({ form, onChange }: Props) {
             value={form.jobTitlesSeeking}
             onChange={(e) => onChange("jobTitlesSeeking", e.target.value)}
             placeholder="E.g. Frontend Engineer, React Developer"
-            className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+            className="w-full bg-surface border border-border rounded-md px-3 py-2.5 lg:py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -49,7 +49,7 @@ export function JobPreferencesForm({ form, onChange }: Props) {
                 id="remote-pref"
                 value={form.remotePreference}
                 onChange={(e) => onChange("remotePreference", e.target.value as RemotePreference)}
-                className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary appearance-none focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+                className="w-full bg-surface border border-border rounded-md px-3 py-2.5 lg:py-2 text-sm text-text-primary appearance-none focus:ring-1 focus:ring-accent focus:border-accent outline-none"
               >
                 {REMOTE_PREFERENCES.map((value) => (
                   <option key={value} value={value}>
@@ -77,7 +77,7 @@ export function JobPreferencesForm({ form, onChange }: Props) {
               value={form.salaryExpectation}
               onChange={(e) => onChange("salaryExpectation", e.target.value)}
               placeholder="E.g. $120k+"
-              className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+              className="w-full bg-surface border border-border rounded-md px-3 py-2.5 lg:py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
             />
           </div>
         </div>
@@ -94,7 +94,7 @@ export function JobPreferencesForm({ form, onChange }: Props) {
             value={form.preferredLocations}
             onChange={(e) => onChange("preferredLocations", e.target.value)}
             placeholder="E.g. New York, London"
-            className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+            className="w-full bg-surface border border-border rounded-md px-3 py-2.5 lg:py-2 text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent outline-none"
           />
         </div>
         <div className="space-y-2">
@@ -109,7 +109,7 @@ export function JobPreferencesForm({ form, onChange }: Props) {
               id="cover-letter-tone"
               value={form.coverLetterTone}
                 onChange={(e) => onChange("coverLetterTone", e.target.value as CoverLetterTone)}
-              className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text-primary appearance-none focus:ring-1 focus:ring-accent focus:border-accent outline-none"
+              className="w-full bg-surface border border-border rounded-md px-3 py-2.5 lg:py-2 text-sm text-text-primary appearance-none focus:ring-1 focus:ring-accent focus:border-accent outline-none"
             >
               {COVER_LETTER_TONES.map((value) => (
                 <option key={value} value={value}>

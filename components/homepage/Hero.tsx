@@ -3,11 +3,11 @@ import Image from "next/image";
 
 export function Hero() {
   return (
-    <section className="relative w-full overflow-hidden bg-background pt-16 pb-20 px-6 md:px-8">
+    <section className="relative w-full overflow-hidden bg-background pt-16 pb-20 px-4 md:px-6 lg:px-8">
       {/* Background Soft Gradient */}
       <div className="absolute inset-0 z-0 pointer-events-none opacity-60">
         <div 
-          className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[80%] aspect-square max-w-[1000px] rounded-full blur-[120px]"
+          className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[80%] aspect-square max-w-250 rounded-full blur-[120px]"
           style={{
             background: "radial-gradient(circle, var(--color-accent-light) 0%, var(--color-info-light) 50%, transparent 100%)",
           }}
@@ -16,13 +16,13 @@ export function Hero() {
 
       <div className="relative z-10 max-w-7xl mx-auto flex flex-col items-center text-center">
         {/* Main Headline */}
-        <h1 className="text-4xl md:text-5xl lg:text-[56px] font-extrabold tracking-tight text-text-primary leading-tight max-w-4xl">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-extrabold tracking-tight text-text-primary leading-tight max-w-4xl">
           Job hunting is hard.<br />
           Your tools shouldn&apos;t be.
         </h1>
 
         {/* Subheadline */}
-        <p className="mt-6 text-base md:text-lg text-text-secondary max-w-2xl leading-relaxed">
+        <p className="mt-6 text-sm md:text-base lg:text-lg text-text-secondary max-w-2xl leading-relaxed">
           Stop applying blind. JobPilot finds the jobs, researches the companies, and gives you everything you need to stand out.
         </p>
 
@@ -50,7 +50,7 @@ export function Hero() {
         </div>
 
         {/* Dashboard Preview */}
-        <div className="mt-16 w-full max-w-[940px] rounded-xl overflow-hidden shadow-2xl border border-border bg-surface">
+        <div className="mt-16 w-full max-w-235 rounded-xl overflow-hidden shadow-2xl border border-border bg-surface">
           <Image
             src="/images/dashboard-demo.png"
             alt="JobPilot Dashboard Preview"
