@@ -2,8 +2,8 @@ import Image from "next/image";
 
 export function ManageJobSearch() {
   return (
-    <section className="w-full py-20 px-6 md:px-8 bg-surface">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
+    <section className="w-full py-16 lg:py-20 px-4 md:px-6 lg:px-8 bg-surface">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-20 items-center">
         
         {/* Left Column - Content */}
         <div className="lg:col-span-5 flex flex-col justify-center">
@@ -23,7 +23,7 @@ export function ManageJobSearch() {
             </div>
 
             {/* Feature Item 2 - Inactive */}
-            <div className="border-l-4 border-transparent pl-6 py-4 border-t border-border-light">
+            <div className="border-l-4 border-l-transparent pl-6 py-4 border-t border-border-light">
               <h3 className="font-bold text-text-primary text-base md:text-lg">
                 Know the Company Before You Apply
               </h3>
@@ -33,7 +33,7 @@ export function ManageJobSearch() {
             </div>
 
             {/* Feature Item 3 - Inactive */}
-            <div className="border-l-4 border-transparent pl-6 py-4 border-t border-border-light">
+            <div className="border-l-4 border-l-transparent pl-6 py-4 border-t border-border-light">
               <h3 className="font-bold text-text-primary text-base md:text-lg">
                 Keep track of every application
               </h3>
@@ -46,7 +46,7 @@ export function ManageJobSearch() {
 
         {/* Right Column - Visual Mockup */}
         <div className="lg:col-span-7 flex justify-center">
-          <div className="w-full max-w-[560px] rounded-xl overflow-hidden shadow-lg border border-border bg-surface">
+          <div className="w-full max-w-140 rounded-xl overflow-hidden shadow-lg border border-border bg-surface">
             <Image
               src="/images/jobs-lists.png"
               alt="Job Matches List Mockup"

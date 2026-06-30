@@ -2,12 +2,12 @@ import Image from "next/image";
 
 export function ApplyConfidence() {
   return (
-    <section className="w-full py-20 px-6 md:px-8 bg-surface">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
+    <section className="w-full py-16 lg:py-20 px-4 md:px-6 lg:px-8 bg-surface">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-20 items-center">
         
         {/* Left Column - Visual Mockup (Agent Log) */}
         <div className="lg:col-span-6 flex justify-center lg:order-1 order-2">
-          <div className="w-full max-w-[500px] rounded-xl overflow-hidden shadow-lg border border-border bg-surface">
+          <div className="w-full max-w-125 rounded-xl overflow-hidden shadow-lg border border-border bg-surface">
             <Image
               src="/images/agnet-log.png"
               alt="AI Agent Logs Terminal Mockup"
