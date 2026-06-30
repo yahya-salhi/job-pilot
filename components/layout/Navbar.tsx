@@ -64,7 +64,7 @@ export function Navbar({ user }: { user: UserSchema | null }) {
   }, [isOpen]);
 
   return (
-    <header className="w-full h-16 bg-surface border-b border-border-light flex items-center justify-between px-6 md:px-8 sticky top-0 z-50">
+    <header className="w-full h-16 bg-surface border-b border-border-light flex items-center justify-between px-4 md:px-6 lg:px-8 sticky top-0 z-50">
       <div className="flex items-center gap-8 max-w-7xl w-full mx-auto justify-between">
         <Link href="/" className="flex items-center gap-2 shrink-0">
           <Image
@@ -91,7 +91,7 @@ export function Navbar({ user }: { user: UserSchema | null }) {
           ) : (
             <Link
               href="/login"
-              className="bg-text-primary text-white hover:bg-opacity-90 font-medium text-sm px-4 py-2 rounded-md transition-all duration-200"
+              className="bg-text-primary text-white hover:bg-opacity-90 font-medium text-sm px-4 py-2.5 lg:py-2 rounded-md transition-all duration-200"
             >
               Start for free
             </Link>
