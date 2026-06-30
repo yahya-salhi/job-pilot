@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
   AreaChart,
   Area,
@@ -56,26 +56,11 @@ function formatDay(iso: unknown): string {
 }
 
 function ChartContainer({ children }: { children: React.ReactNode }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [width, setWidth] = useState(0);
-
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const measure = () => setWidth(el.getBoundingClientRect().width);
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-
   return (
-    <div ref={containerRef} className="w-full h-70">
-      {width > 0 && (
-        <ResponsiveContainer width={width} height={280} debounce={50}>
-          {children}
-        </ResponsiveContainer>
-      )}
+    <div className="w-full h-70">
+      <ResponsiveContainer width="100%" height={280}>
+        {children}
+      </ResponsiveContainer>
     </div>
   );
 }
