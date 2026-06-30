@@ -138,7 +138,7 @@ export function Navbar({ user }: { user: UserSchema | null }) {
       )}
 
       <div
-        className={`fixed inset-y-0 right-0 w-[280px] bg-surface shadow-xl z-50 transform transition-transform duration-300 ease-in-out ${
+        className={`fixed inset-y-0 right-0 w-70 bg-surface shadow-xl z-50 transform transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
