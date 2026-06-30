@@ -6,6 +6,7 @@ import {
   getJobsWithResearchCount,
   getJobsThisWeekCount,
   getRecentResearchJobs,
+  getCompanyResearchDayCounts,
 } from "@/data/jobs-repo";
 import { getRecentAgentRuns } from "@/data/agent-runs-repo";
 import { getProfileComplete } from "@/data/jobs-repo";
@@ -48,7 +49,7 @@ export async function loadDashboardData(
     getRecentResearchJobs(insforge, userId),
     analytics.getJobsFoundOverTime(userId),
     analytics.getMatchScoreDistribution(userId),
-    analytics.getCompanyResearchActivity(userId),
+    getCompanyResearchDayCounts(insforge, userId),
   ]);
 
   const activityEntries: ActivityEntry[] = [];
@@ -90,6 +91,6 @@ export async function loadDashboardData(
     activityEntries: activityEntries.slice(0, 8),
     jobsFoundData: jobsFound.error ? null : jobsFound.data,
     matchScoreData: matchScore.error ? null : matchScore.data,
-    companyResearchData: companyResearch.error ? null : companyResearch.data,
+    companyResearchData: companyResearch.length > 0 ? companyResearch : null,
   };
 }

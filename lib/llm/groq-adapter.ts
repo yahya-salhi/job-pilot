@@ -2,10 +2,10 @@ import OpenAI from "openai";
 import type { ILLMProvider, LLMExtractOptions, LLMResult, ModelCapability } from "@/types/llm-provider";
 
 const MODEL_DEFAULTS: Record<ModelCapability, string> = {
-  scoring: "llama3-70b-8192",
-  research: "llama3-8b-8192",
-  "resume-extract": "llama3-8b-8192",
-  "resume-generate": "llama3-70b-8192",
+  scoring: "llama-3.3-70b-versatile",
+  research: "llama-3.1-8b-instant",
+  "resume-extract": "llama-3.1-8b-instant",
+  "resume-generate": "llama-3.3-70b-versatile",
 };
 
 function resolveModel(capability: ModelCapability): string {
@@ -110,10 +110,11 @@ export class GroqAdapter implements ILLMProvider {
 
       return { success: true, data: content };
     } catch (error) {
-      console.error("[groq/callLLM]", error);
+      const message = error instanceof Error ? error.message : String(error);
+      console.error("[groq/callLLM]", message);
       return {
         success: false,
-        error: "AI request failed. Please try again.",
+        error: `AI request failed: ${message}`,
       };
     }
   }
